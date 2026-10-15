@@ -1,0 +1,8 @@
+{
+  "name": "@et4proj/liquid-glass-react",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "description": "React 绑定：useGlass、Glass 组件（M2）"
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@et4proj/liquid-glass-web",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/liquid-glass-web.cjs",
+  "module": "./dist/liquid-glass-web.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/liquid-glass-web.js",
+      "require": "./dist/liquid-glass-web.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@et4proj/liquid-glass-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@et4proj/liquid-glass-style-ios27": "workspace:*",
+    "happy-dom": "^20.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vite-plugin-dts": "^5.1.2",
+    "vitest": "^5.0.4"
+  }
+}

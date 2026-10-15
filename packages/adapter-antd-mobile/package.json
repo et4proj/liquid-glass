@@ -1,0 +1,8 @@
+{
+  "name": "@et4proj/liquid-glass-adapter-antd-mobile",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "description": "antd-mobile v5 适配包（M2）"
+}

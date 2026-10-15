@@ -1,0 +1,14 @@
+{
+  "name": "liquid-glass-monorepo",
+  "private": true,
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.8",
+    "typescript": "^5.9.3"
+  }
+}
