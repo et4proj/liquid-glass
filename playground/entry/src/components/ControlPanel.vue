@@ -160,8 +160,8 @@ const intensityPresets = [
   gap: 18px;
   padding: 20px;
   border-radius: 16px;
-  background: rgba(15, 18, 32, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgb(15 18 32 / 88%);
+  border: 1px solid rgb(255 255 255 / 8%);
   height: fit-content;
 }
 
@@ -207,7 +207,7 @@ select {
   flex: 1;
   padding: 6px 8px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgb(255 255 255 / 14%);
   background: #171b2e;
   color: #e8eaf2;
   font-size: 13px;
@@ -234,7 +234,7 @@ input[type='range'] {
   padding: 4px 0;
   font-size: 12px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgb(255 255 255 / 14%);
   background: transparent;
   color: #9aa3b5;
   cursor: pointer;
@@ -243,7 +243,7 @@ input[type='range'] {
 .preset.active {
   border-color: #7ee0c0;
   color: #7ee0c0;
-  background: rgba(126, 224, 192, 0.1);
+  background: rgb(126 224 192 / 10%);
 }
 
 .check {

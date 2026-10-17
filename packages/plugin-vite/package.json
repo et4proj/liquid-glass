@@ -2,7 +2,7 @@
   "name": "@et4proj/vite-plugin-liquid-glass",
   "version": "0.0.0",
   "private": true,
+  "description": "Vite 插件薄封装（M1）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "Vite 插件薄封装（M1）"
+  "main": "./src/index.ts"
 }

@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-adapter-vant",
   "version": "0.0.0",
   "private": true,
+  "description": "Vant 4 适配包（M1）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "Vant 4 适配包（M1）"
+  "main": "./src/index.ts"
 }

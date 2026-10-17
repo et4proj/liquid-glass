@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-adapter-nutui",
   "version": "0.0.0",
   "private": true,
+  "description": "NutUI 适配包（M2+）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "NutUI 适配包（M2+）"
+  "main": "./src/index.ts"
 }

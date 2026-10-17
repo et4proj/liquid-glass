@@ -124,22 +124,22 @@ StylePack / ChannelDef 形状：
 
 ```ts
 interface StylePack {
-  id: string
-  label: string
-  base?: string            // 继承基准风格：通道级深合并（子覆盖父；数组替换不拼接；interpolate 子优先）
-  solid?: { tint: string; border: string; shadow?: string }
+  id: string;
+  label: string;
+  base?: string; // 继承基准风格：通道级深合并（子覆盖父；数组替换不拼接；interpolate 子优先）
+  solid?: { tint: string; border: string; shadow?: string };
   channels: {
-    material: MaterialChannelDef    // 特化：stops（blur/saturation/highlight）+ static 按 MaterialPreset 提供基础外观
-    refraction?: ChannelDef         // strength 走 stops；ior/bezelWidth/aberration/rimLight 走 static
-    motion?: ChannelDef             // 全 static（弹簧参数与强度无关）
-    [channel: string]: unknown      // x- 前缀自定义通道原样透传
-  }
+    material: MaterialChannelDef; // 特化：stops（blur/saturation/highlight）+ static 按 MaterialPreset 提供基础外观
+    refraction?: ChannelDef; // strength 走 stops；ior/bezelWidth/aberration/rimLight 走 static
+    motion?: ChannelDef; // 全 static（弹簧参数与强度无关）
+    [channel: string]: unknown; // x- 前缀自定义通道原样透传
+  };
 }
 
 interface ChannelDef<T> {
-  static?: Partial<T>     // 静态参数；stops 派生值覆盖同名字段（static 是"无 stops 字段"的兜底）
-  stops?: ChannelStops<T> // { subtle?, regular?, strong? } 三锚点
-  interpolate?: (lo, hi, t) => Partial<T>  // 唯一非 JSON-safe 的可选增强
+  static?: Partial<T>; // 静态参数；stops 派生值覆盖同名字段（static 是"无 stops 字段"的兜底）
+  stops?: ChannelStops<T>; // { subtle?, regular?, strong? } 三锚点
+  interpolate?: (lo, hi, t) => Partial<T>; // 唯一非 JSON-safe 的可选增强
 }
 ```
 
@@ -171,16 +171,16 @@ reasons 为空时输出 `['ok']`。
 
 ## 实现期的最简决定（可调整）
 
-| # | 决定 | 备选 |
-|---|---|---|
-| 1 | 预算超限降一档而非摘除最旧表面 | LRU 摘除（需运行时状态，M1 调度器实现时重估） |
-| 2 | 规则 intensity 后命中覆盖前命中 | 取最严格（改动小） |
-| 3 | maxTier 链"只压不抬"：surface 声明高于全局时不抬升 | 允许抬升（会破坏全局预算控制） |
-| 4 | `matchesVersion` 自写 | 引 semver-regex 等（M0 无依赖原则） |
-| 5 | ios27 独立预设（非共享引用）：依据 Apple 公开方向（更通透/暗化边缘/亮高光/强折射）拟定，待真机校准 | 用户观感反馈"磨砂感过重"与 iOS 27 官方方向一致；WWDC26 SOTU 确认 ultra clear 取向 |
-| 6 | **token v2（D1–D5 拍板，见提案）**：core 内置极简 basic fallback；旧扁平 plan.tokens 一步到位切 plan.tokens.material；风格包先 workspace 目录不发 npm；未知通道宽松校验（透传 + dev 警告）；motion 通道进 v2 首版 | 详见 docs/proposals/token-system-v2.md §9 |
-| 7 | `material.refraction` 投影自 refraction 通道 strength（MaterialTokens 形状冻结，css 后端与 --glass-refraction 零改动） | material 通道自带 refraction 字段（数据重复，否决） |
-| 8 | 单侧缺失插值取存在的一侧（field 声明于任一锚点即视为 stops 管理，static 不再兜底） | 缺失侧回退 static（破坏"stops 覆盖 static"的锚点命中语义，否决） |
+| #   | 决定                                                                                                                                                                                                              | 备选                                                                              |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1   | 预算超限降一档而非摘除最旧表面                                                                                                                                                                                    | LRU 摘除（需运行时状态，M1 调度器实现时重估）                                     |
+| 2   | 规则 intensity 后命中覆盖前命中                                                                                                                                                                                   | 取最严格（改动小）                                                                |
+| 3   | maxTier 链"只压不抬"：surface 声明高于全局时不抬升                                                                                                                                                                | 允许抬升（会破坏全局预算控制）                                                    |
+| 4   | `matchesVersion` 自写                                                                                                                                                                                             | 引 semver-regex 等（M0 无依赖原则）                                               |
+| 5   | ios27 独立预设（非共享引用）：依据 Apple 公开方向（更通透/暗化边缘/亮高光/强折射）拟定，待真机校准                                                                                                                | 用户观感反馈"磨砂感过重"与 iOS 27 官方方向一致；WWDC26 SOTU 确认 ultra clear 取向 |
+| 6   | **token v2（D1–D5 拍板，见提案）**：core 内置极简 basic fallback；旧扁平 plan.tokens 一步到位切 plan.tokens.material；风格包先 workspace 目录不发 npm；未知通道宽松校验（透传 + dev 警告）；motion 通道进 v2 首版 | 详见 docs/proposals/token-system-v2.md §9                                         |
+| 7   | `material.refraction` 投影自 refraction 通道 strength（MaterialTokens 形状冻结，css 后端与 --glass-refraction 零改动）                                                                                            | material 通道自带 refraction 字段（数据重复，否决）                               |
+| 8   | 单侧缺失插值取存在的一侧（field 声明于任一锚点即视为 stops 管理，static 不再兜底）                                                                                                                                | 缺失侧回退 static（破坏"stops 覆盖 static"的锚点命中语义，否决）                  |
 
 ## 测试覆盖
 

@@ -13,11 +13,13 @@
 **目标**：在现有组件库（Vant、antd-mobile、NutUI、TDesign Mobile 等）之上，提供一套独立的液态玻璃"材质 + 效果"能力，不重写组件。
 
 **核心竞争力**：
+
 1. **效果质量**：在各环境下尽可能接近原生 iOS 液态玻璃的质感（当前基线 iOS 26，后续跟进 iOS 27+，见 §5.1 `style`），并有可量化的验收标准（见 §11）。
 2. **接入速度**：通过构建工具插件（Vite、webpack 等）接入，业务代码零改动或少量改动（见 §9）。
 3. **安全降级**：一套 API 在不同环境自动选择最优实现，并遵循无障碍设置。
 
 **非目标**：
+
 - 不追求与 iOS 原生 100% 一致（折射类效果本质上是模拟）。
 - 不以 B 端后台作为首发场景（玻璃质感与信息密度、文字对比度存在冲突）。
 - 不以"几份 JSON 映射清单"作为主要交付物：效果质量、增强组件和构建集成才是产品本身（见 §2.4）。
@@ -28,12 +30,12 @@
 
 ### 2.1 现有生态
 
-| 类别 | 代表项目 | 特点 |
-|---|---|---|
-| Web 整套组件库 | Liquid UI（Vue 3）、React Liquid | 偏"玻璃材质"（模糊、高光），无真折射 |
-| Web 折射类 | liquid-glass-react、liquid-glass-vue、liquid-glass-studio（WebGL2/WebGPU）、react-liquid-glass-svg（纯 SVG） | 带折射，浏览器兼容性差异大 |
-| 原生与跨端 | @callstack/liquid-glass（RN）、Expo GlassEffect、腾讯 Kuikly、uni-app x glass-effect-view、Flutter 系列 | 调用系统玻璃，低版本降级 |
-| shadcn / Radix 生态 | 21st.dev 上的液态玻璃组件、Ein UI、shadcn-glass-ui | 已较拥挤 |
+| 类别                | 代表项目                                                                                                     | 特点                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Web 整套组件库      | Liquid UI（Vue 3）、React Liquid                                                                             | 偏"玻璃材质"（模糊、高光），无真折射 |
+| Web 折射类          | liquid-glass-react、liquid-glass-vue、liquid-glass-studio（WebGL2/WebGPU）、react-liquid-glass-svg（纯 SVG） | 带折射，浏览器兼容性差异大           |
+| 原生与跨端          | @callstack/liquid-glass（RN）、Expo GlassEffect、腾讯 Kuikly、uni-app x glass-effect-view、Flutter 系列      | 调用系统玻璃，低版本降级             |
+| shadcn / Radix 生态 | 21st.dev 上的液态玻璃组件、Ein UI、shadcn-glass-ui                                                           | 已较拥挤                             |
 
 ### 2.2 关键技术约束
 
@@ -45,13 +47,13 @@
 
 ### 2.3 主流移动端组件库的主题机制
 
-| 库 | 主题机制 | 备注 |
-|---|---|---|
-| Vant 4 | CSS 变量（基础变量 + 组件变量），ConfigProvider 的 `themeVars`，深浅色分别覆盖 | ConfigProvider 仅影响子组件，挂到 body 的弹层需实测 |
-| antd-mobile v5 | 大量 CSS 变量，`:root`（常写 `:root:root`）或局部节点覆盖，组件支持 `style` 传变量 | |
-| NutUI | CSS 变量 + ConfigProvider 的 `theme-vars` | 支持 Vue、Taro、uni-app |
-| TDesign Mobile | Design Token 全部为 CSS 变量（颜色、字体、圆角、阴影、尺寸），带主题生成器 | 官方仓库有 issue 征集 Tabbar 悬浮胶囊的液态玻璃实现，需关注官方动向 |
-| Varlet | 同样基于 CSS 变量 | |
+| 库             | 主题机制                                                                           | 备注                                                                |
+| -------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Vant 4         | CSS 变量（基础变量 + 组件变量），ConfigProvider 的 `themeVars`，深浅色分别覆盖     | ConfigProvider 仅影响子组件，挂到 body 的弹层需实测                 |
+| antd-mobile v5 | 大量 CSS 变量，`:root`（常写 `:root:root`）或局部节点覆盖，组件支持 `style` 传变量 |                                                                     |
+| NutUI          | CSS 变量 + ConfigProvider 的 `theme-vars`                                          | 支持 Vue、Taro、uni-app                                             |
+| TDesign Mobile | Design Token 全部为 CSS 变量（颜色、字体、圆角、阴影、尺寸），带主题生成器         | 官方仓库有 issue 征集 Tabbar 悬浮胶囊的液态玻璃实现，需关注官方动向 |
+| Varlet         | 同样基于 CSS 变量                                                                  |                                                                     |
 
 **结论**：换色、圆角、阴影很顺，但没有任何一个把"材质"（模糊、折射、高光）作为一等 token，需要自建一层 `--glass-*` 变量，再补组件级补丁和少量增强交互（如悬浮胶囊 TabBar 的选中气泡）。
 
@@ -72,13 +74,13 @@
 
 组件库与框架不是一一对应（例如 TDesign Mobile 同时有 React 与 Vue 实现，NutUI 支持 Vue、Taro、uni-app），所以把"框架"、"平台"和"构建工具"作为独立轴，避免 N×M 的适配包。
 
-| 层 | 变化轴 | 内容 |
-|---|---|---|
-| 配置层 + 核心（策略解析、探针接口、token） | 不变 | 纯逻辑，不依赖 DOM 与框架 |
-| 渲染后端 | 平台 | Web（CSS、SVG、WebGL）、小程序（基本只有 CSS）、原生壳桥接 |
-| 绑定层 | 框架 | Vue、React；H5 声明式路线下可省略 |
-| 适配层 | 组件库 | 选择器到 Surface 声明的映射表 + 变量映射 + 增强组件（代码）+ CSS 补丁 |
-| 集成层 | 构建工具 | Vite / webpack / Rspack / Rollup 插件、CLI、框架模块（Nuxt、Next），详见 §9 |
+| 层                                         | 变化轴   | 内容                                                                        |
+| ------------------------------------------ | -------- | --------------------------------------------------------------------------- |
+| 配置层 + 核心（策略解析、探针接口、token） | 不变     | 纯逻辑，不依赖 DOM 与框架                                                   |
+| 渲染后端                                   | 平台     | Web（CSS、SVG、WebGL）、小程序（基本只有 CSS）、原生壳桥接                  |
+| 绑定层                                     | 框架     | Vue、React；H5 声明式路线下可省略                                           |
+| 适配层                                     | 组件库   | 选择器到 Surface 声明的映射表 + 变量映射 + 增强组件（代码）+ CSS 补丁       |
+| 集成层                                     | 构建工具 | Vite / webpack / Rspack / Rollup 插件、CLI、框架模块（Nuxt、Next），详见 §9 |
 
 ### 3.2 依赖方向
 
@@ -141,10 +143,10 @@ packages/
 
 ```ts
 export interface GlassTokens {
-  material: MaterialTokens      // 形状冻结（与 --glass-* 一一对应，见下）
-  refraction?: RefractionTokens // 折射通道：strength / ior / bezelWidth / aberration / rimLight
-  motion?: MotionTokens         // 交互物理通道：液滴弹簧参数（TabBar 增强件消费）
-  [channel: string]: unknown    // 未知通道透传（前向兼容：风格包先行、消费者后到）
+  material: MaterialTokens; // 形状冻结（与 --glass-* 一一对应，见下）
+  refraction?: RefractionTokens; // 折射通道：strength / ior / bezelWidth / aberration / rimLight
+  motion?: MotionTokens; // 交互物理通道：液滴弹簧参数（TabBar 增强件消费）
+  [channel: string]: unknown; // 未知通道透传（前向兼容：风格包先行、消费者后到）
 }
 ```
 
@@ -152,13 +154,13 @@ export interface GlassTokens {
 
 ```css
 :root {
-  --glass-blur: 16px;           /* 背景模糊半径 */
-  --glass-saturation: 1.4;      /* 背景饱和度 */
-  --glass-tint: rgba(255,255,255,0.18);
-  --glass-border: rgba(255,255,255,0.35);
-  --glass-highlight: 0.6;       /* 顶部/边缘高光强度 0..1 */
-  --glass-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  --glass-refraction: 0;        /* 折射强度（= refraction 通道 strength 投影），仅 svg/webgl/native 档生效 */
+  --glass-blur: 16px; /* 背景模糊半径 */
+  --glass-saturation: 1.4; /* 背景饱和度 */
+  --glass-tint: rgba(255, 255, 255, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-highlight: 0.6; /* 顶部/边缘高光强度 0..1 */
+  --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --glass-refraction: 0; /* 折射强度（= refraction 通道 strength 投影），仅 svg/webgl/native 档生效 */
   --glass-radius: 24px;
 }
 ```
@@ -168,31 +170,31 @@ export interface GlassTokens {
 ### 4.2 Surface 声明
 
 ```ts
-export type Tier = 'none' | 'solid' | 'css' | 'svg' | 'webgl' | 'native';
-export type SurfaceRole = 'bar' | 'sheet' | 'overlay' | 'control' | 'card' | 'capsule';
-export type MaterialPreset = 'regular' | 'clear' | 'tinted';
+export type Tier = "none" | "solid" | "css" | "svg" | "webgl" | "native";
+export type SurfaceRole = "bar" | "sheet" | "overlay" | "control" | "card" | "capsule";
+export type MaterialPreset = "regular" | "clear" | "tinted";
 
 export interface SurfaceShape {
-  kind: 'rounded' | 'capsule' | 'circle';
-  radius?: number | 'auto';
+  kind: "rounded" | "capsule" | "circle";
+  radius?: number | "auto";
 }
 
 /** 折射所需背景的来源提示；css 档忽略 */
 export type BackdropHint =
-  | 'page'                                   // 页面内容（由浏览器提供，svg 档可用）
-  | 'self'                                   // 元素自身背景
-  | { kind: 'source'; id: string };          // 显式背景源（webgl 档需要）
+  | "page" // 页面内容（由浏览器提供，svg 档可用）
+  | "self" // 元素自身背景
+  | { kind: "source"; id: string }; // 显式背景源（webgl 档需要）
 
 export interface SurfaceDeclaration {
   role: SurfaceRole;
   shape?: SurfaceShape;
   material?: MaterialPreset;
-  intensity?: number;          // 0..1，覆盖全局
-  tint?: string;               // 覆盖着色
-  interactive?: boolean;       // 按压回弹、高光跟随
-  group?: string;              // 同组玻璃块的"融合"分组（如相邻胶囊）
+  intensity?: number; // 0..1，覆盖全局
+  tint?: string; // 覆盖着色
+  interactive?: boolean; // 按压回弹、高光跟随
+  group?: string; // 同组玻璃块的"融合"分组（如相邻胶囊）
   backdrop?: BackdropHint;
-  maxTier?: Tier;              // 该表面单独限制的档位上限
+  maxTier?: Tier; // 该表面单独限制的档位上限
 }
 ```
 
@@ -208,22 +210,22 @@ export interface SurfaceDeclaration {
 /** 每个平台自己决定 target 的具体类型 */
 export interface SurfaceHandle<T = unknown> {
   id: string;
-  target: T;                    // Web: HTMLElement；小程序: 组件 id / ref；原生壳: view tag
+  target: T; // Web: HTMLElement；小程序: 组件 id / ref；原生壳: view tag
   declaration: SurfaceDeclaration;
 }
 
 export interface RenderPlan {
   tier: Tier;
-  tokens: GlassTokens;           // 通道化 token 集（§4.1）
+  tokens: GlassTokens; // 通道化 token 集（§4.1）
   interactive: boolean;
-  reasons: ReasonCode[];        // 为什么选这一档 / 为什么降级（用于调试）
+  reasons: ReasonCode[]; // 为什么选这一档 / 为什么降级（用于调试）
 }
 
 export interface BackendInstance {
   update(plan: RenderPlan): void;
-  pause(): void;                // 不可见 / KeepAlive 失活 / 滚动中降级
+  pause(): void; // 不可见 / KeepAlive 失活 / 滚动中降级
   resume(): void;
-  unmount(): void;              // 必须幂等（React StrictMode 会重复挂载）
+  unmount(): void; // 必须幂等（React StrictMode 会重复挂载）
 }
 
 export interface GlassBackend<T = unknown> {
@@ -239,28 +241,28 @@ export interface GlassBackend<T = unknown> {
 ### 4.4 Probe（平台探针）
 
 ```ts
-export type Platform = 'web' | 'miniprogram' | 'native-shell';
+export type Platform = "web" | "miniprogram" | "native-shell";
 
 export interface Capabilities {
   platform: Platform;
-  engine?: 'blink' | 'webkit' | 'gecko' | 'other';
-  os?: 'ios' | 'android' | 'harmony' | 'desktop';
+  engine?: "blink" | "webkit" | "gecko" | "other";
+  os?: "ios" | "android" | "harmony" | "desktop";
   osVersion?: string;
 
   backdropFilter: boolean;
-  backdropFilterWithSvg: boolean;   // SVG 滤镜能否用于 backdrop-filter（Safari 通常为 false）
+  backdropFilterWithSvg: boolean; // SVG 滤镜能否用于 backdrop-filter（Safari 通常为 false）
   webgl2: boolean;
   webgpu?: boolean;
-  htmlInCanvas?: boolean;           // 实验特性
-  nativeGlass: boolean;             // iOS 26+ 且存在桥接
+  htmlInCanvas?: boolean; // 实验特性
+  nativeGlass: boolean; // iOS 26+ 且存在桥接
 
   a11y: {
     reduceTransparency: boolean;
     reduceMotion: boolean;
     increaseContrast: boolean;
   };
-  device: { tier: 'low' | 'mid' | 'high'; dpr: number };
-  mp?: { sdkVersion: string };      // 小程序基础库版本
+  device: { tier: "low" | "mid" | "high"; dpr: number };
+  mp?: { sdkVersion: string }; // 小程序基础库版本
 }
 
 export interface PlatformProbe {
@@ -276,7 +278,7 @@ export interface PlatformProbe {
 ```ts
 export interface BackdropSource {
   id: string;
-  kind: 'static-image' | 'video' | 'canvas' | 'html-in-canvas';
+  kind: "static-image" | "video" | "canvas" | "html-in-canvas";
   /** 返回可用于 WebGL 纹理上传的对象；由 webgl 后端消费 */
   acquire(): Promise<TexImageSource | null>;
   release(): void;
@@ -294,36 +296,36 @@ export interface BackdropSource {
 ```ts
 export interface GlassConfig {
   version: 1;
-  preset?: string;                              // 主题预设名
-  style?: string;                               // 风格 id：风格包注册后的取用键（'ios27' 主要方向，'ios26' 历史基线；风格数据在风格包维护，core 零风格数据，未注册回退内置 basic）
-  intensity: 'subtle' | 'regular' | 'strong' | number;
+  preset?: string; // 主题预设名
+  style?: string; // 风格 id：风格包注册后的取用键（'ios27' 主要方向，'ios26' 历史基线；风格数据在风格包维护，core 零风格数据，未注册回退内置 basic）
+  intensity: "subtle" | "regular" | "strong" | number;
   material: MaterialPreset;
-  maxTier: Tier;                                // 全局档位上限
-  fallback: 'solid' | 'blur' | 'none';          // 无法达到目标档时的降级形态
+  maxTier: Tier; // 全局档位上限
+  fallback: "solid" | "blur" | "none"; // 无法达到目标档时的降级形态
 
   budget: {
-    maxSurfaces: number;                        // 同屏玻璃数上限
-    dprCap: number;                             // 分辨率倍率上限
+    maxSurfaces: number; // 同屏玻璃数上限
+    dprCap: number; // 分辨率倍率上限
     fpsCap: number;
-    degradeOnScroll: boolean;                   // 滚动中临时降档
+    degradeOnScroll: boolean; // 滚动中临时降档
   };
   motion: {
     interactive: boolean;
     respectReducedMotion: boolean;
   };
 
-  rules?: CompatRule[];                         // 按环境的兼容规则
+  rules?: CompatRule[]; // 按环境的兼容规则
   roles?: Partial<Record<SurfaceRole, RoleOverride>>;
-  advanced?: GlassAdvanced;                     // 通道级 token 覆盖：{ material: {...}, refraction: {...} }（优先级最高，逐字段生效）
+  advanced?: GlassAdvanced; // 通道级 token 覆盖：{ material: {...}, refraction: {...} }（优先级最高，逐字段生效）
 }
 
 export interface CompatRule {
   when: {
     platform?: Platform;
-    engine?: Capabilities['engine'];
-    os?: Capabilities['os'];
-    osVersion?: string;                         // semver 范围
-    sdkVersion?: string;                        // 小程序基础库范围
+    engine?: Capabilities["engine"];
+    os?: Capabilities["os"];
+    osVersion?: string; // semver 范围
+    sdkVersion?: string; // 小程序基础库范围
   };
   then: { maxTier?: Tier; intensity?: number; disable?: boolean };
 }
@@ -370,20 +372,20 @@ const pack: StylePack = {
 
 ```ts
 const glass = createGlass({
-  config,                       // GlassConfig
-  probe,                        // PlatformProbe
+  config, // GlassConfig
+  probe, // PlatformProbe
   backends: [cssBackend, svgBackend],
 });
 
 // 命令式
-const handle = glass.register(el, { role: 'bar', shape: { kind: 'capsule' } });
+const handle = glass.register(el, { role: "bar", shape: { kind: "capsule" } });
 handle.unregister();
 
 // 运行时更新配置（远程下发 / 用户偏好）
 glass.updateConfig(nextConfig);
 
 // 调试
-glass.debug.explain(el);        // => RenderPlan（含 reasons）
+glass.debug.explain(el); // => RenderPlan（含 reasons）
 ```
 
 策略解析：
@@ -415,16 +417,16 @@ function resolve(input: {
 ```ts
 export interface GlassAdapter {
   library: string;
-  versionRange: string;                 // 适配的组件库版本范围
-  framework: 'vue' | 'react' | 'none';
-  platform: 'web' | 'miniprogram';
-  tokenMap: Record<string, string>;     // '--glass-tint' -> '--van-tabbar-background'
+  versionRange: string; // 适配的组件库版本范围
+  framework: "vue" | "react" | "none";
+  platform: "web" | "miniprogram";
+  tokenMap: Record<string, string>; // '--glass-tint' -> '--van-tabbar-background'
   surfaces: Array<{
     selector: string;
     declaration: SurfaceDeclaration;
-    overlay?: boolean;                  // 弹层通常挂到 body，需要单独处理继承
+    overlay?: boolean; // 弹层通常挂到 body，需要单独处理继承
   }>;
-  patches?: string;                     // 少量必要的 CSS 补丁（透明底、层叠上下文修复）
+  patches?: string; // 少量必要的 CSS 补丁（透明底、层叠上下文修复）
 }
 ```
 
@@ -432,18 +434,18 @@ export interface GlassAdapter {
 
 ```ts
 export const vantAdapter: GlassAdapter = {
-  library: 'vant',
-  versionRange: '^4',
-  framework: 'vue',
-  platform: 'web',
+  library: "vant",
+  versionRange: "^4",
+  framework: "vue",
+  platform: "web",
   tokenMap: {
-    '--glass-tint': '--van-tabbar-background',
+    "--glass-tint": "--van-tabbar-background",
   },
   surfaces: [
-    { selector: '.van-tabbar',  declaration: { role: 'bar',     shape: { kind: 'capsule' } } },
-    { selector: '.van-nav-bar', declaration: { role: 'bar' } },
-    { selector: '.van-popup--bottom', declaration: { role: 'sheet' }, overlay: true },
-    { selector: '.van-switch',  declaration: { role: 'control',  interactive: true } },
+    { selector: ".van-tabbar", declaration: { role: "bar", shape: { kind: "capsule" } } },
+    { selector: ".van-nav-bar", declaration: { role: "bar" } },
+    { selector: ".van-popup--bottom", declaration: { role: "sheet" }, overlay: true },
+    { selector: ".van-switch", declaration: { role: "control", interactive: true } },
   ],
 };
 ```
@@ -460,12 +462,12 @@ TabBar、NavBar、ActionSheet、Popup、Dialog、Toast、Switch、Slider、分�
 
 ### 7.6 皮肤包的组成
 
-| 部分 | 形态 | 说明 |
-|---|---|---|
-| 映射清单 | 数据 | 选择器 → Surface 声明、变量映射，覆盖常规组件 |
-| 增强组件 | 代码 | 效果质量最依赖的部分：胶囊 TabBar 的选中气泡、Switch / Slider 的液态滑块、按压回弹、相邻玻璃块融合等 |
-| CSS 补丁 | 代码 | 透明底、层叠上下文修复、与组件库默认样式的冲突处理 |
-| 测试与基线 | 数据 + 脚本 | 按库与版本的截图基线、真机检测记录 |
+| 部分       | 形态        | 说明                                                                                                 |
+| ---------- | ----------- | ---------------------------------------------------------------------------------------------------- |
+| 映射清单   | 数据        | 选择器 → Surface 声明、变量映射，覆盖常规组件                                                        |
+| 增强组件   | 代码        | 效果质量最依赖的部分：胶囊 TabBar 的选中气泡、Switch / Slider 的液态滑块、按压回弹、相邻玻璃块融合等 |
+| CSS 补丁   | 代码        | 透明底、层叠上下文修复、与组件库默认样式的冲突处理                                                   |
+| 测试与基线 | 数据 + 脚本 | 按库与版本的截图基线、真机检测记录                                                                   |
 
 增强组件的原则：尽量只添加属性与类名，不改变 DOM 结构；提供按组件退出的开关。
 
@@ -483,10 +485,10 @@ TabBar、NavBar、ActionSheet、Popup、Dialog、Toast、Switch、Slider、分�
 
 绑定层只是把框架生命周期翻译成 `mount / update / unmount`，代码量很小，并且**不是硬依赖**：H5 声明式路线下由核心自行发现 `data-glass`，可完全不用绑定层。
 
-| 框架 | 提供 | 需要处理的点 |
-|---|---|---|
-| Vue | `v-glass` 指令、`useGlass`、`<Glass>` | Teleport 弹层；KeepAlive 激活 / 失活时 `pause / resume`；Nuxt SSR |
-| React | `useGlass`、`<Glass>` | StrictMode 重复挂载（`unmount` 必须幂等）；Portal 弹层；服务端渲染时仅在客户端组件运行 |
+| 框架  | 提供                                  | 需要处理的点                                                                           |
+| ----- | ------------------------------------- | -------------------------------------------------------------------------------------- |
+| Vue   | `v-glass` 指令、`useGlass`、`<Glass>` | Teleport 弹层；KeepAlive 激活 / 失活时 `pause / resume`；Nuxt SSR                      |
+| React | `useGlass`、`<Glass>`                 | StrictMode 重复挂载（`unmount` 必须幂等）；Portal 弹层；服务端渲染时仅在客户端组件运行 |
 
 ---
 
@@ -496,12 +498,12 @@ TabBar、NavBar、ActionSheet、Popup、Dialog、Toast、Switch、Slider、分�
 
 客户可按需逐级加深，前三级不需要改业务代码：
 
-| 级别 | 做什么 | 业务代码改动 |
-|---|---|---|
-| L0 | 构建期生成并注入样式（材质变量、选择器映射、补丁） | 无 |
-| L1 | 自动注入运行时，探测能力，按档位挂载增强后端（SVG 折射、降档等） | 无 |
-| L2 | 构建期替换个别组件为增强版 | 无，但有构建期替换风险 |
-| L3 | 业务显式使用 `<Glass>`、`v-glass` 做定制 | 少量 |
+| 级别 | 做什么                                                           | 业务代码改动           |
+| ---- | ---------------------------------------------------------------- | ---------------------- |
+| L0   | 构建期生成并注入样式（材质变量、选择器映射、补丁）               | 无                     |
+| L1   | 自动注入运行时，探测能力，按档位挂载增强后端（SVG 折射、降档等） | 无                     |
+| L2   | 构建期替换个别组件为增强版                                       | 无，但有构建期替换风险 |
+| L3   | 业务显式使用 `<Glass>`、`v-glass` 做定制                         | 少量                   |
 
 ### 9.2 构建插件的职责
 
@@ -518,16 +520,16 @@ TabBar、NavBar、ActionSheet、Popup、Dialog、Toast、Switch、Slider、分�
 
 ```ts
 // vite.config.ts
-import glass from '@glass/unplugin/vite';
+import glass from "@glass/unplugin/vite";
 
 export default defineConfig({
   plugins: [
     glass({
-      adapter: 'auto',              // 自动识别组件库与版本
-      config: './glass.config.ts',
-      scope: '.glass-scope',        // 可选：限定作用范围，便于逐页开启
-      level: 1,                     // L0 / L1 / L2
-      diagnostics: 'dev',
+      adapter: "auto", // 自动识别组件库与版本
+      config: "./glass.config.ts",
+      scope: ".glass-scope", // 可选：限定作用范围，便于逐页开启
+      level: 1, // L0 / L1 / L2
+      diagnostics: "dev",
     }),
   ],
 });
@@ -535,15 +537,15 @@ export default defineConfig({
 
 ```ts
 export interface GlassPluginOptions {
-  adapter?: 'auto' | string | GlassAdapter | Array<string | GlassAdapter>;
+  adapter?: "auto" | string | GlassAdapter | Array<string | GlassAdapter>;
   config?: string | GlassConfig;
   scope?: string;
   level?: 0 | 1 | 2;
   runtime?: { inject: boolean; lazyBackends: boolean };
-  styleOrder?: 'after-library';
-  diagnostics?: 'dev' | 'always' | false;
-  exclude?: { components?: string[]; routes?: string[] };  // 按组件 / 路由退出
-  target?: 'web' | 'miniprogram';
+  styleOrder?: "after-library";
+  diagnostics?: "dev" | "always" | false;
+  exclude?: { components?: string[]; routes?: string[] }; // 按组件 / 路由退出
+  target?: "web" | "miniprogram";
 }
 ```
 
@@ -613,48 +615,52 @@ export interface GlassPluginOptions {
 
 ## 12. 降级矩阵（建议的默认最高档，需真机验证）
 
-| 环境 | 默认最高档 | 备注 |
-|---|---|---|
-| iOS Safari / WKWebView（H5） | `css` | SVG 折射不可用 |
-| Android Chrome / WebView | `css`（可选 `svg`） | 需真机压测 |
-| 桌面 Chromium | `svg`；背景可控区域可 `webgl` | |
-| 桌面 Safari / Firefox | `css` | |
-| 混合应用 iOS 26+（有桥接） | `native`（仅固定控件） | DOM 继续管状态，控件投射到原生渲染；需处理滚动、布局同步 |
-| 小程序 | `css`（白名单） | 表现不一致 |
-| 系统开启"降低透明度" | `solid` | 强制，不可被业务覆盖 |
+| 环境                         | 默认最高档                    | 备注                                                     |
+| ---------------------------- | ----------------------------- | -------------------------------------------------------- |
+| iOS Safari / WKWebView（H5） | `css`                         | SVG 折射不可用                                           |
+| Android Chrome / WebView     | `css`（可选 `svg`）           | 需真机压测                                               |
+| 桌面 Chromium                | `svg`；背景可控区域可 `webgl` |                                                          |
+| 桌面 Safari / Firefox        | `css`                         |                                                          |
+| 混合应用 iOS 26+（有桥接）   | `native`（仅固定控件）        | DOM 继续管状态，控件投射到原生渲染；需处理滚动、布局同步 |
+| 小程序                       | `css`（白名单）               | 表现不一致                                               |
+| 系统开启"降低透明度"         | `solid`                       | 强制，不可被业务覆盖                                     |
 
 ---
 
 ## 13. 性能、SSR 与无障碍
 
 **性能预算（由核心执行，配置层只给数字）**
+
 - 共享单个 WebGL canvas 绘制所有玻璃块（浏览器对 WebGL 上下文数量有限制）。
 - 可见性检测（IntersectionObserver）；不可见即 `pause`。
 - 滚动中临时降档；同屏数量超限自动降档。
 - 限制 `dpr` 与帧率。
 
 **SSR / 首屏**
+
 - 服务端仅输出基线 CSS；客户端探测后再升档，避免首屏闪烁。
 - 探测逻辑只在客户端运行。
 
 **无障碍与可读性**
+
 - 遵循 `prefers-reduced-transparency`、`prefers-contrast`、`prefers-reduced-motion`，并通过 `Probe.subscribe` 响应运行中变化。
 - 文字对比度需为每个 role 提供保底：玻璃底之上的文字自动加深或加遮罩。
 
 **CSS 层叠上下文风险**
+
 - `transform`、`filter`、`opacity`、`overflow` 等会破坏 backdrop-filter，适配层的 `patches` 需要逐组件排查。
 
 ---
 
 ## 14. 分阶段路线
 
-| 阶段 | 内容 | 验证点 |
-|---|---|---|
-| M0 | 定稿三个契约接口；`glass-core`（纯逻辑，无 DOM 依赖） | 单元测试覆盖 `resolve` 的优先级与降级 |
-| M1 | CSS 皮肤（含编译期产物）+ Vite 插件（L0 / L1，基于 unplugin）+ `glass init` + 1 个适配包 + 1 个增强件（胶囊 TabBar）+ 展示站 | 存量 Demo 项目零改动接入；iOS Safari、Android WebView 真机的效果、弹层继承、滚动性能；与 iOS 26 对标验收 |
-| M2 | SVG 折射后端（Chromium）；webpack / Rspack 支持；Vue 或 React 绑定；第二个适配包；`glass doctor`；配置远程下发 | 样式顺序与拆包在两类构建工具下稳定；StrictMode / KeepAlive / Teleport 场景稳定 |
-| M3 | 小程序包（wxss 产物 + 平台能力表 + 真机验证）；受控背景场景；更多增强件（Switch、Slider 等） | 小程序 iOS / Android 真机矩阵 |
-| M4 | 原生桥接档；WebGL 档（仅背景可控区域）；HTML-in-Canvas 探索 | 桥接下滚动同步；功耗与发热压测 |
+| 阶段 | 内容                                                                                                                         | 验证点                                                                                                   |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| M0   | 定稿三个契约接口；`glass-core`（纯逻辑，无 DOM 依赖）                                                                        | 单元测试覆盖 `resolve` 的优先级与降级                                                                    |
+| M1   | CSS 皮肤（含编译期产物）+ Vite 插件（L0 / L1，基于 unplugin）+ `glass init` + 1 个适配包 + 1 个增强件（胶囊 TabBar）+ 展示站 | 存量 Demo 项目零改动接入；iOS Safari、Android WebView 真机的效果、弹层继承、滚动性能；与 iOS 26 对标验收 |
+| M2   | SVG 折射后端（Chromium）；webpack / Rspack 支持；Vue 或 React 绑定；第二个适配包；`glass doctor`；配置远程下发               | 样式顺序与拆包在两类构建工具下稳定；StrictMode / KeepAlive / Teleport 场景稳定                           |
+| M3   | 小程序包（wxss 产物 + 平台能力表 + 真机验证）；受控背景场景；更多增强件（Switch、Slider 等）                                 | 小程序 iOS / Android 真机矩阵                                                                            |
+| M4   | 原生桥接档；WebGL 档（仅背景可控区域）；HTML-in-Canvas 探索                                                                  | 桥接下滚动同步；功耗与发热压测                                                                           |
 
 说明：M1 先做 Vite，是因为基于 unplugin 后 webpack / Rspack 只是薄封装，成本较低；若客户构建工具分布另有要求，可调整顺序。
 

@@ -1,0 +1,111 @@
+/* 演示应用外观（移动端壳，非 glass 样式——glass 全部由运行时注入） */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+}
+
+body {
+  /* 结构丰富的背景：渐变 + 网格，让折射/材质可辨识 */
+  background:
+    linear-gradient(135deg, #ffb86c22 0%, transparent 40%),
+    linear-gradient(315deg, #58c4dc33 0%, transparent 50%),
+    repeating-linear-gradient(45deg, #ffffff08 0 12px, transparent 12px 24px),
+    radial-gradient(circle at 80% 15%, #7f5af044, transparent 45%),
+    linear-gradient(180deg, #10101c 0%, #1c1633 100%);
+  color: #f2f2f7;
+}
+
+.demo-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.demo-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.demo-hero {
+  padding: 4px 2px;
+}
+
+.demo-hero h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.demo-hero p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.72;
+}
+
+.demo-card {
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+
+.demo-card h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.demo-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  opacity: 0.75;
+}
+
+.demo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.demo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-popup-body {
+  padding: 18px;
+}
+
+.demo-popup-body h3 {
+  margin: 0 0 8px;
+}
+
+.demo-popup-body p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.demo-tabbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 430px;
+}

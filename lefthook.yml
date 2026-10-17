@@ -1,0 +1,33 @@
+# git hooks 编排（lefthook）：pre-commit 串行执行 staged 增量 lint/format/fix → 全量 typecheck，
+# commit-msg 校验提交信息（conventional commits），pre-push 复检 typecheck（turbo 缓存命中秒过）。
+# 安装：pnpm install 经根 package.json "prepare" 自动执行 lefthook install；卸载：lefthook uninstall
+#
+# piped（串行）而非 parallel 的原因：fix 类命令（oxlint --fix / oxfmt）会改写文件并 re-stage，
+# 与 tsc 全量编译并发会产生读写竞态；串行同时保证 typecheck 检查的是修复后的代码。
+# glob 无匹配（如本次提交不含该类型文件）时 lefthook 自动跳过该命令。
+pre-commit:
+  piped: true
+  commands:
+    oxlint:
+      glob: "*.{js,jsx,ts,tsx,cjs,mjs}"
+      run: pnpm exec oxlint --fix {staged_files}
+      stage_fixed: true
+    oxfmt:
+      glob: "*.{js,jsx,ts,tsx,cjs,mjs,json,jsonc}"
+      run: pnpm exec oxfmt {staged_files}
+      stage_fixed: true
+    stylelint:
+      glob: "*.{css,vue}"
+      run: pnpm exec stylelint --fix --allow-empty-input {staged_files}
+      stage_fixed: true
+    typecheck:
+      # tsc 无 staged 粒度，走 turbo 全量（缓存命中秒过，仅改动包真跑）
+      run: pnpm typecheck
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
+pre-push:
+  commands:
+    typecheck:
+      run: pnpm typecheck

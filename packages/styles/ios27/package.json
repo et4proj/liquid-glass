@@ -1,8 +1,8 @@
 {
   "name": "@et4proj/liquid-glass-style-ios27",
   "version": "0.1.0",
-  "type": "module",
   "description": "liquid-glass iOS 27 风格包（主要方向：更通透 · 暗化边缘 · 亮高光），纯数据包",
+  "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",

@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // 全仓单份配置（oxc 设计为 monorepo 根级单次扫描，不进 turbo 任务图）。
+  // .vue 豁免：oxc 的 vue 插件尚不完整，起步阶段不覆盖（2026-10-17 决策，成熟后再收紧）
+  "plugins": ["typescript", "unicorn", "oxc", "react"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {},
+  "env": {
+    "builtin": true,
+    "browser": true
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/@mf-types/**",
+    "**/.turbo/**",
+    "**/*.vue"
+  ],
+  "overrides": [
+    {
+      "files": ["**/test/**"],
+      "rules": {
+        // 测试需要故意构造 thenable mock（resolve 对象值透传等场景），产品代码保持该规则
+        "unicorn/no-thenable": "off"
+      }
+    }
+  ]
+}

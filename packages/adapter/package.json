@@ -1,0 +1,36 @@
+{
+  "name": "@et4proj/liquid-glass-adapter",
+  "version": "0.1.0",
+  "description": "适配层内核：GlassAdapterManifest 契约 + applyAdapter（tokenMap 别名注入 / patches / 选择器发现），设计见 docs/proposals/adapter-system-design.md",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/liquid-glass-adapter.cjs",
+  "module": "./dist/liquid-glass-adapter.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/liquid-glass-adapter.js",
+      "require": "./dist/liquid-glass-adapter.cjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@et4proj/liquid-glass-core": "workspace:*",
+    "@et4proj/liquid-glass-web": "workspace:*"
+  },
+  "devDependencies": {
+    "happy-dom": "^20.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vite-plugin-dts": "^5.1.2",
+    "vitest": "^5.0.4"
+  }
+}

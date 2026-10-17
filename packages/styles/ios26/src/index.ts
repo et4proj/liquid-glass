@@ -1,4 +1,4 @@
-import type { StylePack } from '@et4proj/liquid-glass-core'
+import type { StylePack } from "@et4proj/liquid-glass-core";
 
 /**
  * iOS 26 风格包（历史校准基线）：磨砂为主、折射温和。
@@ -8,9 +8,9 @@ import type { StylePack } from '@et4proj/liquid-glass-core'
  *   便捷：import '@et4proj/liquid-glass-style-ios26/auto'
  */
 export const ios26: StylePack = {
-  id: 'ios26',
-  label: 'iOS 26 Liquid Glass（校准基线）',
-  solid: { tint: 'rgba(255,255,255,0.92)', border: 'rgba(255,255,255,0.55)' },
+  id: "ios26",
+  label: "iOS 26 Liquid Glass（校准基线）",
+  solid: { tint: "rgba(255,255,255,0.92)", border: "rgba(255,255,255,0.55)" },
   channels: {
     material: {
       stops: {
@@ -20,21 +20,21 @@ export const ios26: StylePack = {
       },
       static: {
         regular: {
-          tint: 'rgba(255,255,255,0.18)',
-          border: 'rgba(255,255,255,0.35)',
-          shadow: '0 8px 24px rgba(0,0,0,0.12)',
+          tint: "rgba(255,255,255,0.18)",
+          border: "rgba(255,255,255,0.35)",
+          shadow: "0 8px 24px rgba(0,0,0,0.12)",
           radius: 24,
         },
         clear: {
-          tint: 'rgba(255,255,255,0.06)',
-          border: 'rgba(255,255,255,0.25)',
-          shadow: '0 8px 24px rgba(0,0,0,0.08)',
+          tint: "rgba(255,255,255,0.06)",
+          border: "rgba(255,255,255,0.25)",
+          shadow: "0 8px 24px rgba(0,0,0,0.08)",
           radius: 24,
         },
         tinted: {
-          tint: 'rgba(255,255,255,0.30)',
-          border: 'rgba(255,255,255,0.45)',
-          shadow: '0 8px 24px rgba(0,0,0,0.16)',
+          tint: "rgba(255,255,255,0.30)",
+          border: "rgba(255,255,255,0.45)",
+          shadow: "0 8px 24px rgba(0,0,0,0.16)",
           radius: 24,
         },
       },
@@ -51,4 +51,4 @@ export const ios26: StylePack = {
       },
     },
   },
-}
+};

@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-adapter-tdesign-react",
   "version": "0.0.0",
   "private": true,
+  "description": "TDesign Mobile React 适配包（观察官方动向）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "TDesign Mobile React 适配包（观察官方动向）"
+  "main": "./src/index.ts"
 }

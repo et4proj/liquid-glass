@@ -6,6 +6,8 @@ import GlassCard from './components/GlassCard.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import PlanPanel from './components/PlanPanel.vue'
 import RuntimeDemo from './components/RuntimeDemo.vue'
+import EffectGallery from './components/EffectGallery.vue'
+import DemoCenter from './components/DemoCenter.vue'
 
 /**
  * M0 playground：core 策略层的可视化调试台。
@@ -165,6 +167,12 @@ const plans = computed(() =>
         <!-- 真实运行时（createGlass + cssBackend + data-glass 发现） -->
         <RuntimeDemo />
 
+        <!-- 效果画廊：磨砂 / 边缘折射 / 整面放大镜（DOM 背景）+ WebGL 透镜（受控背景） -->
+        <EffectGallery />
+
+        <!-- 演示中心：平台×三方库矩阵 + MF remote 挂载（antd-mobile 先行） -->
+        <DemoCenter />
+
         <!-- RenderPlan 决策细节 -->
         <div class="plans">
           <PlanPanel
@@ -231,8 +239,8 @@ const plans = computed(() =>
   padding: 20px;
   max-height: 300px;
   overflow: auto;
-  background: rgba(10, 13, 24, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgb(10 13 24 / 50%);
+  border: 1px solid rgb(255 255 255 / 7%);
 }
 
 .backdrop-content h2 {
@@ -263,7 +271,7 @@ const plans = computed(() =>
   justify-content: center;
   font-size: 11px;
   font-family: ui-monospace, monospace;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgb(0 0 0 / 55%);
   font-weight: 700;
 }
 
@@ -295,10 +303,10 @@ const plans = computed(() =>
 }
 
 small {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgb(255 255 255 / 75%);
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .main {
     grid-template-columns: 1fr;
   }

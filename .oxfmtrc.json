@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  // 与 .gitignore 互补的额外忽略：.vue 豁免（同 .oxlintrc 决策）、MF 生成的类型目录不参与格式化
+  "ignorePatterns": ["**/*.vue", "**/@mf-types/**"]
+}

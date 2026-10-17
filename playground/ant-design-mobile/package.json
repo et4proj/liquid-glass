@@ -1,0 +1,33 @@
+{
+  "name": "@et4proj/liquid-glass-playground-antd-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "antd-mobile 玻璃化演示应用：standalone（零改动接入验收）+ MF remote（被 playground 演示中心挂载，docs/proposals/playground-federation-design.md）",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@et4proj/liquid-glass-adapter": "workspace:*",
+    "@et4proj/liquid-glass-adapter-antd-mobile": "workspace:*",
+    "@et4proj/liquid-glass-core": "workspace:*",
+    "@et4proj/liquid-glass-react": "workspace:*",
+    "@et4proj/liquid-glass-style-ios27": "workspace:*",
+    "@et4proj/liquid-glass-web": "workspace:*",
+    "antd-mobile": "^5.0.0",
+    "antd-mobile-icons": "^0.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "latest",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4"
+  }
+}

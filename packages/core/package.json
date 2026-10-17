@@ -1,6 +1,9 @@
 {
   "name": "@et4proj/liquid-glass-core",
   "version": "0.1.0",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/liquid-glass-core.cjs",
   "module": "./dist/liquid-glass-core.js",
@@ -12,9 +15,6 @@
       "require": "./dist/liquid-glass-core.cjs"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "vite build",
     "test": "vitest run",

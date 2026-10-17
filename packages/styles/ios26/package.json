@@ -1,8 +1,8 @@
 {
   "name": "@et4proj/liquid-glass-style-ios26",
   "version": "0.1.0",
-  "type": "module",
   "description": "liquid-glass iOS 26 风格包（历史校准基线：磨砂为主、折射温和），纯数据包",
+  "type": "module",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "types": "./src/index.ts",

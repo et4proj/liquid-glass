@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-cli",
   "version": "0.0.0",
   "private": true,
+  "description": "CLI：glass init/build/doctor（M1+）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "CLI：glass init/build/doctor（M1+）"
+  "main": "./src/index.ts"
 }

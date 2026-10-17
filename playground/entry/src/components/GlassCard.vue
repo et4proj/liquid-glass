@@ -75,10 +75,9 @@ const cssVars = computed<Record<string, string>>(() => {
   box-shadow:
     var(--glass-shadow),
     /* 顶部高光，强度随 --glass-highlight */
-    inset 0 1px 0 rgba(255, 255, 255, calc(var(--glass-highlight) * 0.7)),
-    inset 0 -1px 0 rgba(255, 255, 255, calc(var(--glass-highlight) * 0.25));
+    inset 0 1px 0 rgb(255 255 255 / calc(var(--glass-highlight) * 0.7)),
+    inset 0 -1px 0 rgb(255 255 255 / calc(var(--glass-highlight) * 0.25));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
   overflow: hidden;
   transition: background 0.25s, box-shadow 0.25s;
   min-height: 72px;
@@ -87,7 +86,7 @@ const cssVars = computed<Record<string, string>>(() => {
   justify-content: center;
   padding: 18px 22px;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 35%);
 }
 
 /* 顶部斜向高光渐变（iOS 玻璃质感的关键一环） */
@@ -98,7 +97,7 @@ const cssVars = computed<Record<string, string>>(() => {
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, calc(var(--glass-highlight) * 0.22)) 0%,
+    rgb(255 255 255 / calc(var(--glass-highlight) * 0.22)) 0%,
     transparent 42%
   );
   pointer-events: none;
@@ -135,7 +134,7 @@ const cssVars = computed<Record<string, string>>(() => {
   font-weight: 700;
   font-family: ui-monospace, monospace;
   padding: 1px 8px;
-  border: 1px solid currentColor;
+  border: 1px solid currentcolor;
   border-radius: 4px;
 }
 
@@ -143,7 +142,7 @@ const cssVars = computed<Record<string, string>>(() => {
   font-family: ui-monospace, monospace;
   padding: 1px 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgb(255 255 255 / 7%);
 }
 
 .reason.ok {

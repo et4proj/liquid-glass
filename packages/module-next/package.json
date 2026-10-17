@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-next",
   "version": "0.0.0",
   "private": true,
+  "description": "Next.js 框架模块",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "Next.js 框架模块"
+  "main": "./src/index.ts"
 }

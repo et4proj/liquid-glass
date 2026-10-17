@@ -1,8 +1,45 @@
 {
   "name": "@et4proj/liquid-glass-react",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "React 绑定层：GlassProvider / GlassSurface / useGlass（架构 §8，设计见 docs/proposals/react-binding-design.md）",
+  "files": [
+    "dist"
+  ],
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "React 绑定：useGlass、Glass 组件（M2）"
+  "sideEffects": false,
+  "main": "./dist/liquid-glass-react.cjs",
+  "module": "./dist/liquid-glass-react.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/liquid-glass-react.js",
+      "require": "./dist/liquid-glass-react.cjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@et4proj/liquid-glass-core": "workspace:*",
+    "@et4proj/liquid-glass-web": "workspace:*"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "jsdom": "^26.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vite-plugin-dts": "^5.1.2",
+    "vitest": "^5.0.4"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  }
 }

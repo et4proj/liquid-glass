@@ -8,14 +8,14 @@
 
 ## 1. iOS 26 → iOS 27 官方变化（Apple 口径）
 
-| 维度 | iOS 26 | iOS 27 | 来源 |
-|---|---|---|---|
+| 维度   | iOS 26             | iOS 27                                                                 | 来源                   |
+| ------ | ------------------ | ---------------------------------------------------------------------- | ---------------------- |
 | 通透度 | 固定材质，较重磨砂 | **ultra clear ↔ fully tinted 滑杆**，默认显著更透（beta 5 "史上最透"） | Apple 新闻稿 / 9to5Mac |
-| 扩散 | blur 均匀 | "更有效扩散背后复杂内容"（保可读性，blur 收敛而非砍光） | WWDC26 SOTU |
-| 边缘 | 亮描边为主 | **darkened edge**（暗化边缘，制造纵深与分离） | WWDC26 SOTU |
-| 高光 | 柔和 | **brighter specular highlights**（更亮镜面高光） | WWDC26 SOTU |
-| 折射 | 边缘变形不均 | **more uniform refraction**（更均匀）+ 更高对比度 | Apple 官网 iOS 27 页 |
-| 其他 | — | 图标更锐（多层玻璃 + 选择性折射，Icon Composer 支持） | MacRumors |
+| 扩散   | blur 均匀          | "更有效扩散背后复杂内容"（保可读性，blur 收敛而非砍光）                | WWDC26 SOTU            |
+| 边缘   | 亮描边为主         | **darkened edge**（暗化边缘，制造纵深与分离）                          | WWDC26 SOTU            |
+| 高光   | 柔和               | **brighter specular highlights**（更亮镜面高光）                       | WWDC26 SOTU            |
+| 折射   | 边缘变形不均       | **more uniform refraction**（更均匀）+ 更高对比度                      | Apple 官网 iOS 27 页   |
+| 其他   | —                  | 图标更锐（多层玻璃 + 选择性折射，Icon Composer 支持）                  | MacRumors              |
 
 > "更透、更少磨砂" 与用户对当前 demo 的观感反馈一致——iOS 26 风格的 blur 权重是"磨砂感重"的直接原因。
 
@@ -52,13 +52,13 @@
 
 **关键参数**：
 
-| 参数 | 建议值 | 说明 |
-|---|---|---|
-| IOR n₂ | 1.5 | 玻璃标准折射率 |
-| bezel width | 边长的 15–20%（贴图 18%） | 折射区宽度；胶囊形取短边 |
-| 表面函数 | squircle 凸面 | iOS 观感；Switch 等特殊件用 lip 形（凸+凹混合） |
-| 位移上限 | maxDisplacement ≈ 20–45px（按控件尺寸） | 归一化基准，同时是 feDisplacementMap 的 scale |
-| 贴图分辨率 | 127 级/边（8bit 上限） | 圆角矩形可只用 1D 曲线 + 两轴渐变近似（现 svg-backend 做法） |
+| 参数        | 建议值                                  | 说明                                                         |
+| ----------- | --------------------------------------- | ------------------------------------------------------------ |
+| IOR n₂      | 1.5                                     | 玻璃标准折射率                                               |
+| bezel width | 边长的 15–20%（贴图 18%）               | 折射区宽度；胶囊形取短边                                     |
+| 表面函数    | squircle 凸面                           | iOS 观感；Switch 等特殊件用 lip 形（凸+凹混合）              |
+| 位移上限    | maxDisplacement ≈ 20–45px（按控件尺寸） | 归一化基准，同时是 feDisplacementMap 的 scale                |
+| 贴图分辨率  | 127 级/边（8bit 上限）                  | 圆角矩形可只用 1D 曲线 + 两轴渐变近似（现 svg-backend 做法） |
 
 **feDisplacementMap 消费**（SVG 路径，Chromium only）：
 
@@ -76,11 +76,11 @@ filter 内：feImage(位移贴图) → feDisplacementMap(in=SourceGraphic, in2=�
 
 iOS 27 的"更少磨砂"不是去掉 blur，而是**降 blur、提饱和、靠折射承担质感**：
 
-| 量 | ios26（现值） | ios27 方向 | 依据 |
-|---|---|---|---|
-| blur (regular) | 16px | 6–8px | ultra clear 默认 + "更有效扩散复杂内容"（少量 blur 保可读） |
-| saturation | 1.3 | 1.5–1.6 | 低 blur 下背景更"生"，需饱和度补偿防发灰 |
-| tint alpha (regular) | 0.18 | 0.06–0.10 | 更透；tinted 滑杆末端 ~0.22+ |
+| 量                   | ios26（现值） | ios27 方向 | 依据                                                        |
+| -------------------- | ------------- | ---------- | ----------------------------------------------------------- |
+| blur (regular)       | 16px          | 6–8px      | ultra clear 默认 + "更有效扩散复杂内容"（少量 blur 保可读） |
+| saturation           | 1.3           | 1.5–1.6    | 低 blur 下背景更"生"，需饱和度补偿防发灰                    |
+| tint alpha (regular) | 0.18          | 0.06–0.10  | 更透；tinted 滑杆末端 ~0.22+                                |
 
 > CSS `backdrop-filter: blur() saturate()` 顺序无影响（函数分别应用），但 blur 半径是"磨砂感"的第一杠杆。
 
@@ -118,13 +118,13 @@ blur       = lerp(3, 12, s) px        // 着色越重磨砂越重（视觉平衡
 
 ## 4. 平台实现路径映射
 
-| 路径 | 折射 | 扩散 | 高光 | 暗边 | 色差 | 状态 |
-|---|---|---|---|---|---|---|
-| CSS（全浏览器） | ✗ | blur+saturate | 内描边+渐变 | inset 暗环 | ✗ | M1 已实现 |
-| SVG backdrop-filter（Chromium） | 贴图位移 | 同上串联 | feBlend 叠加 rim | B 通道/暗环 | 弱（可选） | M1 已实现（简化贴图） |
-| WebGL（M2） | shader 采样 | 双 pass blur | rim shader | edge shader | ✓ | 规划 |
-| 小程序（M3） | canvas 离屏合成或半透+blur 近似 | ✓ | ✓ | ✓ | ✗ | 规划 |
-| native bridge（M4） | 系统材质 | 系统 | 系统 | 系统 | 系统 | 规划 |
+| 路径                            | 折射                            | 扩散          | 高光             | 暗边        | 色差       | 状态                  |
+| ------------------------------- | ------------------------------- | ------------- | ---------------- | ----------- | ---------- | --------------------- |
+| CSS（全浏览器）                 | ✗                               | blur+saturate | 内描边+渐变      | inset 暗环  | ✗          | M1 已实现             |
+| SVG backdrop-filter（Chromium） | 贴图位移                        | 同上串联      | feBlend 叠加 rim | B 通道/暗环 | 弱（可选） | M1 已实现（简化贴图） |
+| WebGL（M2）                     | shader 采样                     | 双 pass blur  | rim shader       | edge shader | ✓          | 规划                  |
+| 小程序（M3）                    | canvas 离屏合成或半透+blur 近似 | ✓             | ✓                | ✓           | ✗          | 规划                  |
+| native bridge（M4）             | 系统材质                        | 系统          | 系统             | 系统        | 系统       | 规划                  |
 
 SVG 贴图升级点（对比现 svg-backend 的线性渐变近似）：按 §3.1 完整 squircle + Snell 计算 1D 位移曲线，生成真实位移贴图（现为两轴线性渐变，无 IOR 概念）——列入 M1 校准任务。
 
@@ -132,16 +132,16 @@ SVG 贴图升级点（对比现 svg-backend 的线性渐变近似）：按 §3.1
 
 现有草案（tokens.ts）对照本规格的修订建议：
 
-| token | 现草案 | 建议校准值 | 说明 |
-|---|---|---|---|
-| blur | 3/8/14 | **2/6/12** | 进一步压磨砂；strong 仍需可读性下限 |
-| saturation | 1.35/1.55/1.75 | 1.4/1.6/1.8 | 饱和补偿随 blur 降低而上调 |
-| highlight | 0.45/0.75/1.0 | 0.5/0.8/1.0 | brighter specular |
-| refraction | 0.3/0.65/0.95 | 0.35/0.7/1.0 | uniform refraction + 更强 |
-| tint (regular/clear/tinted) | 0.10/0.04/0.22 | 0.08/0.03/0.24 | 对齐滑杆两端 |
-| border | 0.22/0.16/0.35 | 维持 | — |
-| 暗环（shadow inset） | 0.10–0.14 | 维持（B 通道精确化为 0.12） | darkened edge |
-| refraction→scale 映射 | MAX_SCALE=56 | **按控件短边自适应**：scale ≈ bezelWidth × IOR 系数，上限 45px | 固定 56 与控件尺寸无关，大件过冲 |
+| token                       | 现草案         | 建议校准值                                                     | 说明                                |
+| --------------------------- | -------------- | -------------------------------------------------------------- | ----------------------------------- |
+| blur                        | 3/8/14         | **2/6/12**                                                     | 进一步压磨砂；strong 仍需可读性下限 |
+| saturation                  | 1.35/1.55/1.75 | 1.4/1.6/1.8                                                    | 饱和补偿随 blur 降低而上调          |
+| highlight                   | 0.45/0.75/1.0  | 0.5/0.8/1.0                                                    | brighter specular                   |
+| refraction                  | 0.3/0.65/0.95  | 0.35/0.7/1.0                                                   | uniform refraction + 更强           |
+| tint (regular/clear/tinted) | 0.10/0.04/0.22 | 0.08/0.03/0.24                                                 | 对齐滑杆两端                        |
+| border                      | 0.22/0.16/0.35 | 维持                                                           | —                                   |
+| 暗环（shadow inset）        | 0.10–0.14      | 维持（B 通道精确化为 0.12）                                    | darkened edge                       |
+| refraction→scale 映射       | MAX_SCALE=56   | **按控件短边自适应**：scale ≈ bezelWidth × IOR 系数，上限 45px | 固定 56 与控件尺寸无关，大件过冲    |
 
 > 以上为规格目标值，落地时按真机截图校准（方法：iOS 27 系统控件截图 → 高对比条纹背景 → 量取边缘位移像素/ blur 半径 / 暗环宽度）。
 

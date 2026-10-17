@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-bridge",
   "version": "0.0.0",
   "private": true,
+  "description": "iOS 26 原生玻璃桥接（M4）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "iOS 26 原生玻璃桥接（M4）"
+  "main": "./src/index.ts"
 }

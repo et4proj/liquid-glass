@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-adapter-vant-weapp",
   "version": "0.0.0",
   "private": true,
+  "description": "Vant Weapp 小程序适配包（M3）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "Vant Weapp 小程序适配包（M3）"
+  "main": "./src/index.ts"
 }

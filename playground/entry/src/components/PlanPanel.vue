@@ -66,8 +66,8 @@ const tokenRows = computed(() => {
 .plan {
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(15, 18, 32, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgb(15 18 32 / 85%);
+  border: 1px solid rgb(255 255 255 / 8%);
   font-size: 12px;
 }
 
@@ -100,7 +100,7 @@ const tokenRows = computed(() => {
 
 .tokens td {
   padding: 3px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  border-bottom: 1px dashed rgb(255 255 255 / 6%);
 }
 
 .tokens tr:last-child td {

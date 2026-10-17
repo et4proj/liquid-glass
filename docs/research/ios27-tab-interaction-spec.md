@@ -22,13 +22,13 @@
 
 对应 SwiftUI API（我们 Web 侧的语义对标物）：
 
-| Apple API | 语义 | Web 对标 |
-|---|---|---|
-| `glassEffect(_:in:)` | 按形状应用玻璃材质 | `SurfaceDeclaration.shape` |
-| `.interactive()` | 按压变亮/缩放/微光响应 | `.lg-interactive`（已实现按压回缩+高光跟随） |
-| `GlassEffectContainer(spacing:)` | 组内玻璃统一采样/融合；spacing 为吸引融合距离阈值 | 增强件容器（待实现） |
-| `glassEffectID(_:in:)` | 稳定 ID，视图增删时玻璃 merge/split 动画 | 气泡 morph 引擎（待实现） |
-| `glassEffectUnion(id:namespace:)` | 多视图几何合并为单一玻璃胶囊 | 气泡与 TabBar 融合（待实现） |
+| Apple API                         | 语义                                              | Web 对标                                     |
+| --------------------------------- | ------------------------------------------------- | -------------------------------------------- |
+| `glassEffect(_:in:)`              | 按形状应用玻璃材质                                | `SurfaceDeclaration.shape`                   |
+| `.interactive()`                  | 按压变亮/缩放/微光响应                            | `.lg-interactive`（已实现按压回缩+高光跟随） |
+| `GlassEffectContainer(spacing:)`  | 组内玻璃统一采样/融合；spacing 为吸引融合距离阈值 | 增强件容器（待实现）                         |
+| `glassEffectID(_:in:)`            | 稳定 ID，视图增删时玻璃 merge/split 动画          | 气泡 morph 引擎（待实现）                    |
+| `glassEffectUnion(id:namespace:)` | 多视图几何合并为单一玻璃胶囊                      | 气泡与 TabBar 融合（待实现）                 |
 
 ## 2. 关键算法与参数（Web 实现路径）
 
@@ -45,38 +45,38 @@
 
 **光学参数**（可直接作为增强件默认值）：
 
-| 参数 | 默认值 | 说明 |
-|---|---|---|
-| strength | 7 px | 边缘最大位移（总强度旋钮）；对比静态卡片贴图的 20–45px，交互小件明显更收敛 |
-| bezelWidth | 9 px | 折射带宽度（smear 深入透镜的程度） |
-| axisStrength | {x: 1, y: 0.25} | 分轴阻尼——透镜比轨道高，顶/底全位移会把轨道 1px 描边拖成粗带 |
-| cornerBoost | 1.5 | 圆弧端位移倍增（内容沿透镜曲线弯折的关键；平边保持平静） |
-| cornerSpread | 0.45 | 增强区沿圆弧的展开范围（指数；越小弯折覆盖整段弧） |
-| aberration | 0.08 | 色差：红采样 1+a、蓝 1−a 倍位移；0 关闭 |
-| specularOpacity | 0.5 | 边缘 rim light 不透明度 |
-| lightAngle | π/3 | rim light 光源方向 |
-| quality | 2 | 透镜 canvas 与轨道纹理超采样（retina 文字保清晰） |
+| 参数            | 默认值          | 说明                                                                       |
+| --------------- | --------------- | -------------------------------------------------------------------------- |
+| strength        | 7 px            | 边缘最大位移（总强度旋钮）；对比静态卡片贴图的 20–45px，交互小件明显更收敛 |
+| bezelWidth      | 9 px            | 折射带宽度（smear 深入透镜的程度）                                         |
+| axisStrength    | {x: 1, y: 0.25} | 分轴阻尼——透镜比轨道高，顶/底全位移会把轨道 1px 描边拖成粗带               |
+| cornerBoost     | 1.5             | 圆弧端位移倍增（内容沿透镜曲线弯折的关键；平边保持平静）                   |
+| cornerSpread    | 0.45            | 增强区沿圆弧的展开范围（指数；越小弯折覆盖整段弧）                         |
+| aberration      | 0.08            | 色差：红采样 1+a、蓝 1−a 倍位移；0 关闭                                    |
+| specularOpacity | 0.5             | 边缘 rim light 不透明度                                                    |
+| lightAngle      | π/3             | rim light 光源方向                                                         |
+| quality         | 2               | 透镜 canvas 与轨道纹理超采样（retina 文字保清晰）                          |
 
 ### 2.2 液滴运动 —— 弹簧 + squash & stretch
 
 两种已验证的"流"模式（fluidkit LiquidTabs，语义直接对应系统行为）：
 
-| 模式 | 行为 | 适用 |
-|---|---|---|
-| slide（液滴） | 单个带惯性的液滴迁移：速度方向压扁、尾部滞后、经张力场回融、落点摊平 | Tab 切换（默认） |
-| stretch（太妃糖） | 整条不断裂的胶囊：前缘扑向目标、后缘滞后、跨间隙拉伸后回弹 | 分段控件 |
+| 模式              | 行为                                                                 | 适用             |
+| ----------------- | -------------------------------------------------------------------- | ---------------- |
+| slide（液滴）     | 单个带惯性的液滴迁移：速度方向压扁、尾部滞后、经张力场回融、落点摊平 | Tab 切换（默认） |
+| stretch（太妃糖） | 整条不断裂的胶囊：前缘扑向目标、后缘滞后、跨间隙拉伸后回弹           | 分段控件         |
 
 **运动参数**（liquid-toggle 实测值）：
 
-| 参数 | 默认值 | 说明 |
-|---|---|---|
-| attraction | 0.4 /帧 | 每帧逼近剩余距离的比例（0.4 ≈ 快速收敛） |
-| stretchPerSpeed / maxStretch | 0.02 / 0.35 | 松手回弹：速度→拉伸映射与上限 |
-| dragStretchPerSpeed / dragMaxStretch | 0.05 / 0.4 | 拖动中：更强的拉伸映射（拖动时形变更明显） |
-| wobbleLerp | 0.2 /帧 | squash 尺度的逐帧平滑 |
-| edgeResistance | 3（除数） | 拖出边界的橡皮筋阻力 |
-| settleDistance / settleWobble | 0.1 / 0.01 | 低于阈值即静止并停掉 rAF（节能） |
-| labelFadeLerp | 0.25 /帧 | 标签透明度收敛速度（视觉匹配 ~0.15s CSS fade） |
+| 参数                                 | 默认值      | 说明                                           |
+| ------------------------------------ | ----------- | ---------------------------------------------- |
+| attraction                           | 0.4 /帧     | 每帧逼近剩余距离的比例（0.4 ≈ 快速收敛）       |
+| stretchPerSpeed / maxStretch         | 0.02 / 0.35 | 松手回弹：速度→拉伸映射与上限                  |
+| dragStretchPerSpeed / dragMaxStretch | 0.05 / 0.4  | 拖动中：更强的拉伸映射（拖动时形变更明显）     |
+| wobbleLerp                           | 0.2 /帧     | squash 尺度的逐帧平滑                          |
+| edgeResistance                       | 3（除数）   | 拖出边界的橡皮筋阻力                           |
+| settleDistance / settleWobble        | 0.1 / 0.01  | 低于阈值即静止并停掉 rAF（节能）               |
+| labelFadeLerp                        | 0.25 /帧    | 标签透明度收敛速度（视觉匹配 ~0.15s CSS fade） |
 
 ### 2.3 文字层架构（不可妥协项）
 
@@ -108,13 +108,13 @@
 
 ## 3. 落地映射（本仓库）
 
-| 能力 | 落点 | 里程碑 |
-|---|---|---|
-| 按压变亮/回缩/高光跟随 | `.lg-interactive`（已实现） | M1 ✅ |
-| 液滴 slide / stretch 运动 + 弹簧 | 胶囊 TabBar 增强件（packages/web 增强，框架无关内核 + vue/react 绑定） | M1 |
-| 曲面镜透镜（SDF→法线→位移→色差→rim） | WebGL 后端（webgl-backend.ts，§2.1 全参数） | M2 |
-| 文字双层层架构 | 增强件内置（§2.3 不可妥协项） | M1 |
-| merge/split 融合 | 增强件容器（SVG 路径先行，WebGL 统一后替换） | M1→M2 |
+| 能力                                 | 落点                                                                   | 里程碑 |
+| ------------------------------------ | ---------------------------------------------------------------------- | ------ |
+| 按压变亮/回缩/高光跟随               | `.lg-interactive`（已实现）                                            | M1 ✅  |
+| 液滴 slide / stretch 运动 + 弹簧     | 胶囊 TabBar 增强件（packages/web 增强，框架无关内核 + vue/react 绑定） | M1     |
+| 曲面镜透镜（SDF→法线→位移→色差→rim） | WebGL 后端（webgl-backend.ts，§2.1 全参数）                            | M2     |
+| 文字双层层架构                       | 增强件内置（§2.3 不可妥协项）                                          | M1     |
+| merge/split 融合                     | 增强件容器（SVG 路径先行，WebGL 统一后替换）                           | M1→M2  |
 
 > 增强件内核应平台无关（几何/弹簧/覆盖率混合是纯数学），与 core 的 resolve 解耦；WebGL 透镜消费 `refraction` token（§2.1 strength 映射 refraction × 控件短边系数）。
 

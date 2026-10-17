@@ -1,6 +1,8 @@
 packages:
+  # playground 为纯容器目录：entry = MF host 调试台；每新增一种 adapter 的演示
+  # 在此新建一个包（antd-mobile 先行，nutui/tdesign 为 P3），均不发布
   - "packages/*"
   - "packages/styles/*"
-  - "playground"
-onlyBuiltDependencies:
-  - esbuild
+  - "playground/*"
+allowBuilds:
+  lefthook: true

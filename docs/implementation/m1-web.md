@@ -70,6 +70,11 @@ createSvgBackend(): GlassBackend<HTMLElement>
 // backdrop-filter: url(#lg-refraction-<surfaceId>) blur(var(--glass-blur)) saturate(var(--glass-saturation))
 // token v2：折射参数消费 refraction 通道——strength → displacement scale(0..42px 短边自适应)、
 //           ior / bezelWidth 参与 Snell 贴图生成（缺省 1.5 / 0.18）
+// bezelWidth 语义（2026-10-17 放宽为 0..1，原 0..0.5）：
+//   0.18 边缘窄带（ios26/ios27 校准）→ 0.5 穹顶透镜 → 1.0 整面凸透镜（放大镜形态），
+//   位移贴图归一化数据天然支持，仅类型注释与文档放宽；playground 效果画廊可滑杆验证。
+//   无 canvas 2d 的回退分支（线性渐变近似）在 bezel > 0.5 时 stop 会乱序，钳制 0.5
+//   （仅影响测试环境近似值，浏览器精确路径不受限）。
 // 贴图与曲线按 (ior, bezel) 缓存；scale/ior/bezel 任一变化时重建滤镜
 // color-interpolation-filters: sRGB（默认 linearRGB 会偏移中性灰导致整体平移）
 // pause 时显式置 none（内联优先级高于 .lg-paused 类规则）；unmount 移除滤镜节点防泄漏
@@ -110,16 +115,17 @@ mountDiscovery(glass, root?): DiscoveryHandle   // 初始扫描 + MutationObserv
 
 ## 实现决定（含对 core 的修正）
 
-| # | 决定 | 背景 |
-|---|---|---|
-| 1 | **core budget 语义修正**：`activeSurfaces > maxSurfaces` 才降档（原 `>=`） | `maxSurfaces` 语义 = 最多 N 个同时全效；运行时把"顺位"传给 resolve 后边界自然成立 |
-| 2 | core `exports` 修正：产物名 `liquid-glass-core.js/.cjs`（原误写 `index.js`） | web 构建时 rolldown 解析失败暴露 |
-| 3 | 运行时预算"先到先得"：超预算按注册顺序降档，而非随机/全部 | 简单可预期；LRU 摘除仍留待后续（AGENTS 决策表既有条目） |
-| 4 | css 后端同时服务 css/solid/none 档的渲染 | token 形态已含降级信息，后端无需分支 |
-| 5 | 全局样式运行时单例注入（而非仅构建期产物） | glass-web 可脱离构建插件独立使用 |
-| 6 | SVG 折射提前到 M1（原计划 M2） | 用户反馈"只见磨砂、不见液态"；折射是液态感的核心，先行落地 Chromium |
-| 7 | 交互动效（高光跟随 + 按压回弹）由 `plan.interactive` 驱动，内置于后端 | 架构 §5.3 交互形变的一环；reducedMotion 时 resolve 已置 interactive=false 自动关闭 |
-| 8 | **token v2 消费切换**：css 后端读 `plan.tokens.material`（形状冻结，零逻辑变化）；svg 后端读 `tokens.refraction` 通道（strength/ior/bezelWidth），Snell 贴图逻辑不动、参数化 (ior, bezel) 缓存 | 风格包可调折射物理参数；提案 §6 消费者映射 |
+| #   | 决定                                                                                                                                                                                           | 背景                                                                               |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 1   | **core budget 语义修正**：`activeSurfaces > maxSurfaces` 才降档（原 `>=`）                                                                                                                     | `maxSurfaces` 语义 = 最多 N 个同时全效；运行时把"顺位"传给 resolve 后边界自然成立  |
+| 2   | core `exports` 修正：产物名 `liquid-glass-core.js/.cjs`（原误写 `index.js`）                                                                                                                   | web 构建时 rolldown 解析失败暴露                                                   |
+| 3   | 运行时预算"先到先得"：超预算按注册顺序降档，而非随机/全部                                                                                                                                      | 简单可预期；LRU 摘除仍留待后续（AGENTS 决策表既有条目）                            |
+| 4   | css 后端同时服务 css/solid/none 档的渲染                                                                                                                                                       | token 形态已含降级信息，后端无需分支                                               |
+| 5   | 全局样式运行时单例注入（而非仅构建期产物）                                                                                                                                                     | glass-web 可脱离构建插件独立使用                                                   |
+| 6   | SVG 折射提前到 M1（原计划 M2）                                                                                                                                                                 | 用户反馈"只见磨砂、不见液态"；折射是液态感的核心，先行落地 Chromium                |
+| 7   | 交互动效（高光跟随 + 按压回弹）由 `plan.interactive` 驱动，内置于后端                                                                                                                          | 架构 §5.3 交互形变的一环；reducedMotion 时 resolve 已置 interactive=false 自动关闭 |
+| 8   | **token v2 消费切换**：css 后端读 `plan.tokens.material`（形状冻结，零逻辑变化）；svg 后端读 `tokens.refraction` 通道（strength/ior/bezelWidth），Snell 贴图逻辑不动、参数化 (ior, bezel) 缓存 | 风格包可调折射物理参数；提案 §6 消费者映射                                         |
+| 9   | **bezelWidth 语义放宽 0..0.5 → 0..1**（2026-10-17）：贴图归一化数据天然支持整面凸透镜，仅注释放宽；回退渐变分支钳制 0.5 防 stop 乱序                                                           | 效果画廊"整面放大镜"展示需求；ios27 校准 0.18 不变，放大镜为展示形态非系统行为     |
 
 ## 测试覆盖
 

@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-mp",
   "version": "0.0.0",
   "private": true,
+  "description": "小程序平台包：逻辑层运行时与 wxss 产物（M3）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "小程序平台包：逻辑层运行时与 wxss 产物（M3）"
+  "main": "./src/index.ts"
 }

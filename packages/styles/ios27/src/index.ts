@@ -1,4 +1,4 @@
-import type { StylePack } from '@et4proj/liquid-glass-core'
+import type { StylePack } from "@et4proj/liquid-glass-core";
 
 /**
  * iOS 27 风格包（主要开发方向）：更通透 · 暗化边缘 · 亮高光 · 强折射。
@@ -9,10 +9,10 @@ import type { StylePack } from '@et4proj/liquid-glass-core'
  *   便捷：import '@et4proj/liquid-glass-style-ios27/auto'
  */
 export const ios27: StylePack = {
-  id: 'ios27',
-  label: 'iOS 27（主要方向：更通透 · 暗化边缘 · 亮高光）',
+  id: "ios27",
+  label: "iOS 27（主要方向：更通透 · 暗化边缘 · 亮高光）",
   /** 无障碍降级形态：不透明高对比 */
-  solid: { tint: 'rgba(255,255,255,0.92)', border: 'rgba(255,255,255,0.55)' },
+  solid: { tint: "rgba(255,255,255,0.92)", border: "rgba(255,255,255,0.55)" },
   channels: {
     material: {
       // 极致通透：磨砂感收敛到"仅扩散复杂内容"，靠饱和/折射维持质感
@@ -23,22 +23,22 @@ export const ios27: StylePack = {
       },
       static: {
         regular: {
-          tint: 'rgba(255,255,255,0.08)',
-          border: 'rgba(255,255,255,0.22)',
+          tint: "rgba(255,255,255,0.08)",
+          border: "rgba(255,255,255,0.22)",
           // 暗化边缘：内嵌 1px 暗环制造纵深（WWDC26 "darkened edge"）
-          shadow: '0 8px 24px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(0,0,0,0.12)',
+          shadow: "0 8px 24px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(0,0,0,0.12)",
           radius: 24,
         },
         clear: {
-          tint: 'rgba(255,255,255,0.03)',
-          border: 'rgba(255,255,255,0.16)',
-          shadow: '0 8px 24px rgba(0,0,0,0.14), inset 0 0 0 1px rgba(0,0,0,0.10)',
+          tint: "rgba(255,255,255,0.03)",
+          border: "rgba(255,255,255,0.16)",
+          shadow: "0 8px 24px rgba(0,0,0,0.14), inset 0 0 0 1px rgba(0,0,0,0.10)",
           radius: 24,
         },
         tinted: {
-          tint: 'rgba(255,255,255,0.24)',
-          border: 'rgba(255,255,255,0.35)',
-          shadow: '0 8px 24px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(0,0,0,0.14)',
+          tint: "rgba(255,255,255,0.24)",
+          border: "rgba(255,255,255,0.35)",
+          shadow: "0 8px 24px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(0,0,0,0.14)",
           radius: 24,
         },
       },
@@ -72,4 +72,4 @@ export const ios27: StylePack = {
       },
     },
   },
-}
+};

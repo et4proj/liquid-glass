@@ -29,6 +29,7 @@
 ### 规划中
 
 **M1 — CSS 皮肤与首个适配（进行中）**
+
 - [x] `glass-web`：Web 平台探针（能力探测 + 无障碍订阅）、CSS 渲染后端（token → `--glass-*`）、SVG 折射后端（Chromium 边缘透镜折射，消费 refraction 通道）、`createGlass` 运行时（register/updateConfig/debug.explain/pause）、`data-glass` 声明式自动发现、交互动效（按压回弹 + 指针高光跟随），28 单测
 - [ ] `adapter-vant`：Vant 4 选择器映射 + 变量映射 + CSS 补丁
 - [ ] `unplugin` + Vite 插件（L0 样式注入 / L1 运行时注入），`glass init` CLI
@@ -36,53 +37,57 @@
 - [ ] 展示站与存量 Demo 零改动接入验证
 
 **M2 — 多构建工具与框架绑定**
+
 - [ ] webpack / Rspack 支持
 - [ ] Vue（`v-glass` / `useGlass` / `<Glass>`）或 React 绑定
 - [ ] `glass doctor` 诊断；配置远程下发
 
 **M3 — 小程序**
+
 - [ ] `glass-mp`：逻辑层运行时 + wxss 编译产物 + 平台能力表 + 真机矩阵
 
 **M4 — 原生与 WebGL**
+
 - [ ] iOS 26 原生玻璃桥接（固定控件投射）
 - [ ] WebGL 档（仅背景可控区域）；受控背景场景
 
 **持续演进**
+
 - [ ] iOS 27 风格包真机采集与校准（当前校准值依据公开资料拟定，见 docs/research/）；iOS 28+ 以新风格包接入（`base` 继承 ios27 只声明差异字段，core 与既有包零改动）
 
 ## 包结构
 
-| 包 | 职责 | 状态 |
-|---|---|---|
-| `@et4proj/liquid-glass-core` | 契约类型 + 配置 + 通道化 token 引擎 + 风格注册表 + resolve（纯逻辑，零风格数据） | **M0 已实现** |
-| `@et4proj/liquid-glass-style-ios27` | 风格包（token v2）：iOS 27 校准数据（主要开发方向） | **已实现** |
-| `@et4proj/liquid-glass-style-ios26` | 风格包（token v2）：iOS 26 历史校准基线 | **已实现** |
-| `@et4proj/liquid-glass-web` | Web 探针 + CSS/SVG 折射后端 + createGlass 运行时 + data-glass 发现 | **M1 已实现** |
-| `@et4proj/liquid-glass-vue` / `-react` | 框架绑定（指令 / hooks / 组件） | M2 |
-| `@et4proj/liquid-glass-adapter-vant` 等 | 组件库适配包（映射清单 + 增强件 + CSS 补丁） | M1+ |
-| `@et4proj/unplugin-liquid-glass` | 构建插件核心（Vite / webpack / Rspack / Rollup） | M1 |
-| `@et4proj/liquid-glass-mp` | 小程序平台包 | M3 |
-| `@et4proj/liquid-glass-bridge` | iOS 26 原生桥接 | M4 |
-| `@et4proj/liquid-glass-cli` | `glass init / build / doctor` | M1+ |
+| 包                                      | 职责                                                                             | 状态          |
+| --------------------------------------- | -------------------------------------------------------------------------------- | ------------- |
+| `@et4proj/liquid-glass-core`            | 契约类型 + 配置 + 通道化 token 引擎 + 风格注册表 + resolve（纯逻辑，零风格数据） | **M0 已实现** |
+| `@et4proj/liquid-glass-style-ios27`     | 风格包（token v2）：iOS 27 校准数据（主要开发方向）                              | **已实现**    |
+| `@et4proj/liquid-glass-style-ios26`     | 风格包（token v2）：iOS 26 历史校准基线                                          | **已实现**    |
+| `@et4proj/liquid-glass-web`             | Web 探针 + CSS/SVG 折射后端 + createGlass 运行时 + data-glass 发现               | **M1 已实现** |
+| `@et4proj/liquid-glass-vue` / `-react`  | 框架绑定（指令 / hooks / 组件）                                                  | M2            |
+| `@et4proj/liquid-glass-adapter-vant` 等 | 组件库适配包（映射清单 + 增强件 + CSS 补丁）                                     | M1+           |
+| `@et4proj/unplugin-liquid-glass`        | 构建插件核心（Vite / webpack / Rspack / Rollup）                                 | M1            |
+| `@et4proj/liquid-glass-mp`              | 小程序平台包                                                                     | M3            |
+| `@et4proj/liquid-glass-bridge`          | iOS 26 原生桥接                                                                  | M4            |
+| `@et4proj/liquid-glass-cli`             | `glass init / build / doctor`                                                    | M1+           |
 
 完整目录见 [AGENTS.md](AGENTS.md) 仓库地图。
 
 ## 快速开始（核心 API 预览）
 
 ```ts
-import { defineConfig, registerStyle, resolve } from '@et4proj/liquid-glass-core'
-import ios27 from '@et4proj/liquid-glass-style-ios27'
+import { defineConfig, registerStyle, resolve } from "@et4proj/liquid-glass-core";
+import ios27 from "@et4proj/liquid-glass-style-ios27";
 
-registerStyle(ios27)   // 风格包注册（未注册时回退内置 basic 安全网）
+registerStyle(ios27); // 风格包注册（未注册时回退内置 basic 安全网）
 
-const config = defineConfig({ style: 'ios27', intensity: 'regular', maxTier: 'css' })
+const config = defineConfig({ style: "ios27", intensity: "regular", maxTier: "css" });
 
 const plan = resolve({
   config,
-  caps,      // 平台探针产出（glass-web 提供）
-  surface: { role: 'bar', shape: { kind: 'capsule' } },
+  caps, // 平台探针产出（glass-web 提供）
+  surface: { role: "bar", shape: { kind: "capsule" } },
   budget: { activeSurfaces: 3 },
-})
+});
 // plan.tier → 'css' | 'svg' | 'solid' | ...
 // plan.tokens → { material: { blur, saturation, tint, ... },   // css 后端消费
 //                 refraction: { strength, ior, bezelWidth, ... }, // svg/webgl 档消费

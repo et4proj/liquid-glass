@@ -2,7 +2,7 @@
   "name": "@et4proj/liquid-glass-vue",
   "version": "0.0.0",
   "private": true,
+  "description": "Vue 绑定：v-glass 指令、useGlass、Glass 组件（M2）",
   "type": "module",
-  "main": "./src/index.ts",
-  "description": "Vue 绑定：v-glass 指令、useGlass、Glass 组件（M2）"
+  "main": "./src/index.ts"
 }

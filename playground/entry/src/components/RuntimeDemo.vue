@@ -182,8 +182,8 @@ const planEntries = computed(() =>
   gap: 14px;
   padding: 18px;
   border-radius: 16px;
-  background: rgba(15, 18, 32, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgb(15 18 32 / 60%);
+  border: 1px solid rgb(255 255 255 / 8%);
 }
 
 .rt-head h2 {
@@ -202,7 +202,7 @@ const planEntries = computed(() =>
   margin-left: 6px;
   padding: 1px 8px;
   border-radius: 4px;
-  background: rgba(126, 224, 192, 0.12);
+  background: rgb(126 224 192 / 12%);
   color: #7ee0c0;
   font-family: ui-monospace, monospace;
 }
@@ -216,7 +216,7 @@ const planEntries = computed(() =>
 
 .seg {
   display: flex;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgb(255 255 255 / 14%);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -231,7 +231,7 @@ const planEntries = computed(() =>
 }
 
 .seg button.active {
-  background: rgba(126, 224, 192, 0.15);
+  background: rgb(126 224 192 / 15%);
   color: #7ee0c0;
 }
 
@@ -239,7 +239,7 @@ const planEntries = computed(() =>
   padding: 6px 12px;
   font-size: 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgb(255 255 255 / 14%);
   background: transparent;
   color: #c6cddd;
   cursor: pointer;
@@ -253,7 +253,7 @@ const planEntries = computed(() =>
 .hint-move {
   margin-left: 10px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgb(255 255 255 / 60%);
 }
 
 .rt-stage {
@@ -285,7 +285,7 @@ const planEntries = computed(() =>
 }
 
 .rt-card small {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgb(255 255 255 / 72%);
 }
 
 .rt-plans {
@@ -318,7 +318,7 @@ const planEntries = computed(() =>
 .rt-plan .r {
   padding: 1px 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgb(255 255 255 / 7%);
   color: #fbbf24;
 }
 </style>

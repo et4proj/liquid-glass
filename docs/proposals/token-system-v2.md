@@ -6,13 +6,13 @@
 
 ## 1. 现状问题
 
-| 问题 | 现状 | v2 |
-|---|---|---|
-| 风格耦合 core | ios26/ios27 预设硬编码在 `tokens.ts`，新增 iOS 版本必须发 core 版 | 风格包注册，core 零风格数据 |
-| token 扁平且封闭 | `MaterialTokens` 8 字段固定；折射算法参数（ior/bezel/色差）、交互弹簧参数无处安放 | 通道（channel）开放分层 |
-| 强度插值绑死实现 | `buildTokens` 硬编码字段级插值 | 插值规则由通道描述符声明 |
-| solid 降级形态不可定制 | `solidTokens` 硬编码 | solid 进入风格数据 |
-| 一处校准一次发版 | ios27 校准改数据也要动 core 仓库结构 | 只改风格包 |
+| 问题                   | 现状                                                                              | v2                          |
+| ---------------------- | --------------------------------------------------------------------------------- | --------------------------- |
+| 风格耦合 core          | ios26/ios27 预设硬编码在 `tokens.ts`，新增 iOS 版本必须发 core 版                 | 风格包注册，core 零风格数据 |
+| token 扁平且封闭       | `MaterialTokens` 8 字段固定；折射算法参数（ior/bezel/色差）、交互弹簧参数无处安放 | 通道（channel）开放分层     |
+| 强度插值绑死实现       | `buildTokens` 硬编码字段级插值                                                    | 插值规则由通道描述符声明    |
+| solid 降级形态不可定制 | `solidTokens` 硬编码                                                              | solid 进入风格数据          |
+| 一处校准一次发版       | ios27 校准改数据也要动 core 仓库结构                                              | 只改风格包                  |
 
 ## 2. 核心概念（三个）
 
@@ -103,12 +103,12 @@ style 包 → core（仅类型 + registerStyle）
 
 ```ts
 // 显式（推荐，tree-shakable）
-import { registerStyle } from '@et4proj/liquid-glass-core'
-import { ios27 } from '@et4proj/liquid-glass-style-ios27'
-registerStyle(ios27)
+import { registerStyle } from "@et4proj/liquid-glass-core";
+import { ios27 } from "@et4proj/liquid-glass-style-ios27";
+registerStyle(ios27);
 
 // 便捷（风格包提供 side-effect 入口）
-import '@et4proj/liquid-glass-style-ios27/auto'
+import "@et4proj/liquid-glass-style-ios27/auto";
 ```
 
 ## 5. resolve / buildTokens v2 算法
@@ -128,17 +128,18 @@ advanced v2：`advanced: { material: {...}, refraction: {...} }` 通道级逐字
 
 ## 6. 消费者映射
 
-| 消费者 | 读取通道 | 现状 | 增量 |
-|---|---|---|---|
-| css-backend | `material` | ✅ 零改动（形状冻结） | — |
-| svg-backend | `material` + `refraction.strength/ior/bezelWidth` | 现读 `tokens.refraction` | 改读 `refraction.strength`；ior/bezel 从硬编码常量改为消费通道值 |
-| WebGL 后端（M2） | `refraction`（全字段 + aberration/rimLight） | 未实现 | 通道数据已就绪 |
-| TabBar 增强件（M1） | `motion`（弹簧参数） | 硬编码在增强件 | 规格参数（attraction 0.4 等）落入 ios27 风格包 motion 通道 |
-| 小程序后端（M3） | 可新增 `x-mp` 通道 | 未实现 | 风格包先行、core 透传 |
+| 消费者              | 读取通道                                          | 现状                     | 增量                                                             |
+| ------------------- | ------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| css-backend         | `material`                                        | ✅ 零改动（形状冻结）    | —                                                                |
+| svg-backend         | `material` + `refraction.strength/ior/bezelWidth` | 现读 `tokens.refraction` | 改读 `refraction.strength`；ior/bezel 从硬编码常量改为消费通道值 |
+| WebGL 后端（M2）    | `refraction`（全字段 + aberration/rimLight）      | 未实现                   | 通道数据已就绪                                                   |
+| TabBar 增强件（M1） | `motion`（弹簧参数）                              | 硬编码在增强件           | 规格参数（attraction 0.4 等）落入 ios27 风格包 motion 通道       |
+| 小程序后端（M3）    | 可新增 `x-mp` 通道                                | 未实现                   | 风格包先行、core 透传                                            |
 
 ## 7. 扩展剧本（验证架构）
 
 **iOS 28 发布**：
+
 ```
 pnpm workspace 新建 styles/ios28 → 声明 base: 'ios27' + 差异字段 → registerStyle
 core/web/vue 零改动；用户 config.style: 'ios28' 即用
@@ -157,13 +158,13 @@ core/web/vue 零改动；用户 config.style: 'ios28' 即用
 
 ## 9. 决策点（附推荐）
 
-| # | 决策点 | 推荐 | 备选 |
-|---|---|---|---|
-| D1 | core 是否内置 fallback 风格 | **内置极简 `basic`**（未注册时可用，约 20 行数据） | 零内置（未注册即报错/全 solid，更纯粹但对新手不友好） |
-| D2 | 兼容旧扁平 `plan.tokens` | **不兼容**（项目未发布无包袱，一步到位 `plan.tokens.material`） | 顶层 getter 兼容层（多一层歧义） |
-| D3 | 风格包即刻独立 npm 包 or 先 workspace 目录 | **先 workspace**（结构就位，发布等 M1 聚合包时一起定） | 立刻发布（校准未完成，发版噪音） |
-| D4 | 通道校验严格度 | **宽松**（未知通道/未知字段透传不报错，dev 警告） | 严格 schema 校验（安全但阻碍风格包先行） |
-| D5 | motion 通道是否进 v2 首版 | **进**（类型占位 + ios27 数据落 motion；增强件 M1 末接入） | 等 M1 增强件时再加（类型返工） |
+| #   | 决策点                                     | 推荐                                                            | 备选                                                  |
+| --- | ------------------------------------------ | --------------------------------------------------------------- | ----------------------------------------------------- |
+| D1  | core 是否内置 fallback 风格                | **内置极简 `basic`**（未注册时可用，约 20 行数据）              | 零内置（未注册即报错/全 solid，更纯粹但对新手不友好） |
+| D2  | 兼容旧扁平 `plan.tokens`                   | **不兼容**（项目未发布无包袱，一步到位 `plan.tokens.material`） | 顶层 getter 兼容层（多一层歧义）                      |
+| D3  | 风格包即刻独立 npm 包 or 先 workspace 目录 | **先 workspace**（结构就位，发布等 M1 聚合包时一起定）          | 立刻发布（校准未完成，发版噪音）                      |
+| D4  | 通道校验严格度                             | **宽松**（未知通道/未知字段透传不报错，dev 警告）               | 严格 schema 校验（安全但阻碍风格包先行）              |
+| D5  | motion 通道是否进 v2 首版                  | **进**（类型占位 + ios27 数据落 motion；增强件 M1 末接入）      | 等 M1 增强件时再加（类型返工）                        |
 
 ## 10. Token 形态与投影（三层分离，2026-10-15 补充）
 
@@ -175,13 +176,13 @@ core/web/vue 零改动；用户 config.style: 'ios28' 即用
 投影层   CSS 变量（css 后端）· uniforms（webgl）· JS 直消费（小程序）· JSON（bridge）
 ```
 
-| 形态 | 定位 | 关键边界 |
-|---|---|---|
-| JS/TS 对象 | 运行时权威 + 风格包源码 | 唯一能表达 `interpolate` 函数的形态 |
-| JSON | 交换格式 | 配置文件（`liquid-glass.config.json`）/ 风格远程下发 / M4 bridge |
-| CSS 变量 | DOM 渲染投影 | 运行时可变、级联可覆盖、per-element 隔离；仅扁平标量 |
-| 静态 CSS | 编译期投影 | unplugin L0 产物；不能动态 |
-| uniforms | WebGL 投影 | M2 |
+| 形态       | 定位                    | 关键边界                                                         |
+| ---------- | ----------------------- | ---------------------------------------------------------------- |
+| JS/TS 对象 | 运行时权威 + 风格包源码 | 唯一能表达 `interpolate` 函数的形态                              |
+| JSON       | 交换格式                | 配置文件（`liquid-glass.config.json`）/ 风格远程下发 / M4 bridge |
+| CSS 变量   | DOM 渲染投影            | 运行时可变、级联可覆盖、per-element 隔离；仅扁平标量             |
+| 静态 CSS   | 编译期投影              | unplugin L0 产物；不能动态                                       |
+| uniforms   | WebGL 投影              | M2                                                               |
 
 **硬约束：StylePack 的 channels 数据必须 JSON-safe**（纯数据，可序列化远程下发），`interpolate` 是唯一非序列化的可选增强。通道对象进 CSS 语境按 `--glass-<channel>-<field>` 拍平（如 `--glass-refraction-strength`），仅投影消费方需要的字段。
 
