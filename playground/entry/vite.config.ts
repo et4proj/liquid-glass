@@ -6,9 +6,10 @@ import { federation } from "@module-federation/vite";
 export default defineConfig({
   plugins: [
     vue(),
-    // MF host（docs/proposals/playground-federation-design.md §5.2）：
-    // H1 remotes 清单（端口约定 5174）；H2 shared 在 playground 源码 alias 模式下
-    // 不参与匹配（core/web 被 alias 改写），一致性由 ctx.runtime 直传保证（见 DemoCenter.vue 注释）
+    // MF host（docs/proposals/playground-federation-design.md）：
+    // H1 remotes 清单（端口约定：antd-mobile 5174 / workbench 5175 / vant 5176）；H2 shared 在
+    // playground 源码 alias 模式下不参与匹配（core/web 被 alias 改写），一致性由
+    // ctx.runtime 直传保证（workbench 工作台自持运行时，不消费 ctx，见 workbench/src/remote.ts）
     federation({
       name: "liquid_playground",
       remotes: {
@@ -20,6 +21,18 @@ export default defineConfig({
           type: "module",
           name: "liquid_react_demo",
           entry: "http://localhost:5174/remoteEntry.js",
+        },
+        // core/web 工作台（Vue remote，无 react-refresh 前导需求）
+        liquid_glass_workbench: {
+          type: "module",
+          name: "liquid_glass_workbench",
+          entry: "http://localhost:5175/remoteEntry.js",
+        },
+        // vant 4 演示（Vue 线路 remote；vue 不进 shared，独立实例挂载无碍）
+        liquid_glass_vant: {
+          type: "module",
+          name: "liquid_glass_vant",
+          entry: "http://localhost:5176/remoteEntry.js",
         },
       },
     }),

@@ -1,5 +1,5 @@
-import type { GlassRuntime } from '@et4proj/liquid-glass-web';
-import type { GlassConfigInput } from '@et4proj/liquid-glass-core';
+import type { GlassRuntime } from "@et4proj/liquid-glass-web";
+import type { GlassConfigInput } from "@et4proj/liquid-glass-core";
 /**
  * MF remote 出口（docs/proposals/playground-federation-design.md §4 挂载协议）：
  * mount(el, ctx) / unmount()；runtime 由 host 注入（ctx.runtime），
@@ -7,7 +7,7 @@ import type { GlassConfigInput } from '@et4proj/liquid-glass-core';
  */
 export interface DemoHostContext {
     runtime: GlassRuntime<HTMLElement>;
-    mode: 'remote';
+    mode: "remote";
     config: GlassConfigInput;
     demo: {
         platform: string;

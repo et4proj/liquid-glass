@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { loadRemote } from '@module-federation/runtime'
 import { registerStyle } from '@et4proj/liquid-glass-core'
 import { createGlass, createWebProbe, createSvgBackend, createCssBackend } from '@et4proj/liquid-glass-web'
 import { ios26 } from '@et4proj/liquid-glass-style-ios26'
@@ -23,6 +24,8 @@ const runtime = createGlass({
   backends: [createSvgBackend(), createCssBackend()],
 })
 
+const props = defineProps<{ initialLibrary?: string }>()
+
 /* ---------------- 演示矩阵（H3） ---------------- */
 
 interface DemoTarget {
@@ -34,11 +37,23 @@ interface DemoTarget {
 
 const libraries = reactive<DemoTarget[]>([
   { key: 'antd-mobile', label: 'antd-mobile v5', enabled: true },
+  { key: 'vant', label: 'Vant 4 (Vue 线路)', enabled: true },
   { key: 'nutui', label: 'NutUI React', note: 'P3 接入', enabled: false },
   { key: 'tdesign', label: 'TDesign React', note: 'P3 接入', enabled: false },
-  { key: 'vant', label: 'Vant (Vue 线路)', note: '后续', enabled: false },
 ])
-const activeLibrary = ref('antd-mobile')
+const activeLibrary = ref(props.initialLibrary ?? 'antd-mobile')
+
+/* ---------------- remote 分派表（§4.1；Vue remote 无 react 前导） ---------------- */
+
+/** remote 出口名 → MF 名/app；vant 的 @mf-types 待其 dev server 首跑流转（string 重载退化 any） */
+const REMOTE_OF: Record<string, string> = {
+  'antd-mobile': 'liquid_react_demo/app',
+  vant: 'liquid_glass_vant/app',
+}
+/** standalone dev 端口（错误提示用） */
+const PORT_OF: Record<string, number> = { 'antd-mobile': 5174, vant: 5176 }
+/** ctx.demo.platform 语义标记 */
+const PLATFORM_OF: Record<string, string> = { 'antd-mobile': 'web-react', vant: 'web-vue' }
 
 /* ---------------- 迷你控制条（ctx.config 的活来源） ---------------- */
 
@@ -47,35 +62,47 @@ function applyControl(): void {
   runtime.updateConfig({ style: control.style, intensity: control.intensity })
 }
 
-/* ---------------- remote 挂载协议（§4） ---------------- */
-
-interface RemoteApi {
-  mount(el: HTMLElement, ctx: Record<string, unknown>): void
-  unmount(): void
-}
+/* ---------------- remote 挂载协议（§4；官方类型通道 §4.1） ---------------- */
 
 const slotEl = ref<HTMLElement | null>(null)
 const status = ref<'idle' | 'loading' | 'mounted' | 'error'>('idle')
 const errorMsg = ref('')
-let remoteApi: RemoteApi | null = null
+
+/** remote 出口形状（挂载协议 §4；antd 的完整 ctx 类型由 @mf-types 推导，此处收敛为宿主侧最小形状） */
+interface DemoRemote {
+  mount(el: HTMLElement, ctx: unknown): void
+  unmount(): void
+}
+let remoteApi: DemoRemote | null = null
+
+/** default 同形收敛（antd 走 @mf-types 推导的重载；vant 的类型流转前为 any，形状与此断言兼容） */
+function extractApi(mod: unknown): DemoRemote {
+  return ((mod as { default?: unknown }).default ?? mod) as DemoRemote
+}
 
 async function mountDemo(): Promise<void> {
   if (!slotEl.value) return
   await unmountDemo()
+  const lib = activeLibrary.value
+  const remoteName = REMOTE_OF[lib]
+  if (!remoteName) {
+    status.value = 'idle'
+    return
+  }
   status.value = 'loading'
   try {
     // react-refresh 前导先于 React 模块链就绪（缺它则 plugin-react 的 dev
-    // 转换模块直接抛 "can't detect preamble"，见 react-preamble.ts）
-    await reactPreambleReady
-    // MF remote 动态加载（liquid_react_demo → http://localhost:5174/remoteEntry.js）
-    // @ts-ignore -- MF remote 无本地类型（remote dts 接入为 v2 项）
-    const mod = (await import('liquid_react_demo/app')) as RemoteApi & { default?: RemoteApi }
-    remoteApi = mod.default ?? mod
+    // 转换模块直接抛 "can't detect preamble"，见 react-preamble.ts）；
+    // Vue remote 无前导（vant/workbench 同语义）
+    if (lib === 'antd-mobile') await reactPreambleReady
+    // 官方 loadRemote 通道：mount(el, ctx) 签名与 DemoHostContext 由 @mf-types 自动推导，
+    // 无手写协议类型（vant 类型未流转时退化为 any，与 workbench 过渡断言同策略）
+    remoteApi = extractApi(await loadRemote(remoteName))
     remoteApi.mount(slotEl.value, {
       runtime,
       mode: 'remote',
       config: { style: control.style, intensity: control.intensity },
-      demo: { platform: 'web-react', library: activeLibrary.value },
+      demo: { platform: PLATFORM_OF[lib] ?? 'web', library: lib },
     })
     status.value = 'mounted'
   } catch (err) {
@@ -84,7 +111,7 @@ async function mountDemo(): Promise<void> {
     // 空吞错会让"server 没起"的猜测掩盖实际原因（调试踩坑，见 m1-react-line.md 遗留项）
     console.error('[DemoCenter] remote 挂载失败：', err)
     const detail = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
-    errorMsg.value = `挂载失败：${detail}（确认 5174 dev server 在跑后可点重试）`
+    errorMsg.value = `挂载失败：${detail}（确认 ${PORT_OF[lib] ?? 5174} dev server 在跑后可点重试）`
   }
 }
 

@@ -2,7 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    // skipLibCheck：@mf-types 为 MF 插件产物（d.ts 内部诊断与缺文件不影响业务类型流，
+    // 见 playground-federation-design.md §4.1）；开发依赖 remote dev server 跑过至少一次
+    "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
+  // @mf-types：@module-federation/vite 流转的 remote 类型（loadRemote 泛型增强，
+  // 见 §4.1 官方类型通道）；未生成的 remote 退化 any（string 重载），不阻塞
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts", "@mf-types"]
 }

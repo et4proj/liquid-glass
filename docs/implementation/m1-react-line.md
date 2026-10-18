@@ -67,8 +67,8 @@ export function unmount(): void; // root.unmount + detachAdapter
 
 ## 遗留（下一步）
 
-- antd-mobile 变量清单实测 → 补 tokenMap；Switch/Slider 观感打磨（knownIssues）
+- ~~antd-mobile 变量清单实测 → 补 tokenMap~~ **已完成（2026-10-18）**：从 antd-mobile 5.43.0 源码 `es/components/*.css` 实证提取，诚实映射 3 条（`--adm-color-background → --glass-tint`、`--adm-color-border → --glass-border`、`--adm-color-primary → --glass-tint`）；文字层级/语义色/排版/层叠不映射（玻璃管材质不管信息语义）。单测 +2（白名单校验 + 别名渲染），E2E 弹层断言启用（Chromium computed 值已替换 var()，别名与 `--glass-tint` 同值即链路打通）。Switch/Slider 观感打磨仍留 knownIssues（真机，用户自验）
 - P3：adapter-nutui / adapter-tdesign 按同一协议接入（矩阵已留位）
 - P4：unplugin + Vite 插件、胶囊 TabBar 增强件（L2 手段③）
-- remote dts 类型接入（MF 2.0 manifest）与 preview/发布形态（H6）
+- ~~remote dts 类型接入（MF 2.0 manifest）~~ **已完成（2026-10-17）**：@mf-types 官方通道，见 playground-federation-design §4.1；preview/发布形态（H6）仍留
 - 真机验收：iOS Safari + Android WebView（用户自验）

@@ -1,0 +1,22 @@
+{
+  "name": "@et4proj/liquid-glass-playground-workbench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@et4proj/liquid-glass-core": "workspace:*",
+    "@et4proj/liquid-glass-style-ios26": "workspace:*",
+    "@et4proj/liquid-glass-style-ios27": "workspace:*",
+    "@et4proj/liquid-glass-web": "workspace:*",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "latest",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "vite": "^8.3.4"
+  }
+}

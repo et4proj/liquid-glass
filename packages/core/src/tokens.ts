@@ -138,9 +138,10 @@ const registry = new Map<string, StylePack>();
 /** base 链解析（深合并）缓存：registerStyle 时全量失效 */
 const resolvedCache = new Map<string, StylePack>();
 
+/** dev 判定：经 globalThis 结构化读取（平台无关，小程序/浏览器无 process 也不炸） */
 const isDev = (): boolean =>
-  typeof process !== "undefined" &&
-  (process as { env?: Record<string, string> }).env?.NODE_ENV === "development";
+  (globalThis as { process?: { env?: Record<string, string> } }).process?.env?.NODE_ENV ===
+  "development";
 
 /** 已知通道集合；非 x- 前缀的未知通道 dev 警告（宽松校验：透传不报错，D4） */
 const KNOWN_CHANNELS = new Set(["material", "refraction", "motion"]);

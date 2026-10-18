@@ -31,15 +31,16 @@
 **M1 — CSS 皮肤与首个适配（进行中）**
 
 - [x] `glass-web`：Web 平台探针（能力探测 + 无障碍订阅）、CSS 渲染后端（token → `--glass-*`）、SVG 折射后端（Chromium 边缘透镜折射，消费 refraction 通道）、`createGlass` 运行时（register/updateConfig/debug.explain/pause）、`data-glass` 声明式自动发现、交互动效（按压回弹 + 指针高光跟随），28 单测
-- [ ] `adapter-vant`：Vant 4 选择器映射 + 变量映射 + CSS 补丁
+- [x] React 线路（P0-P2）：react 绑定层（GlassProvider/useGlassSurface/GlassSurface）+ adapter 内核（GlassAdapterManifest/applyAdapter）+ adapter-antd-mobile 数据包（零改动接入验收，E2E 覆盖）
+- [x] `adapter-vant`：Vant 4 选择器映射 + 变量映射（tokenMap 映射全局 fallback 层）+ CSS 补丁，Vue 线路打样
 - [ ] `unplugin` + Vite 插件（L0 样式注入 / L1 运行时注入），`glass init` CLI
 - [ ] 增强件：悬浮胶囊 TabBar 选中"气泡"滑动
 - [ ] 展示站与存量 Demo 零改动接入验证
 
 **M2 — 多构建工具与框架绑定**
 
+- [x] Vue 绑定（`liquidGlassVue` 插件 / `v-glass` 指令 / `useGlass` / `GlassSurface`，语义对齐 React 绑定层）
 - [ ] webpack / Rspack 支持
-- [ ] Vue（`v-glass` / `useGlass` / `<Glass>`）或 React 绑定
 - [ ] `glass doctor` 诊断；配置远程下发
 
 **M3 — 小程序**
@@ -57,18 +58,22 @@
 
 ## 包结构
 
-| 包                                      | 职责                                                                             | 状态          |
-| --------------------------------------- | -------------------------------------------------------------------------------- | ------------- |
-| `@et4proj/liquid-glass-core`            | 契约类型 + 配置 + 通道化 token 引擎 + 风格注册表 + resolve（纯逻辑，零风格数据） | **M0 已实现** |
-| `@et4proj/liquid-glass-style-ios27`     | 风格包（token v2）：iOS 27 校准数据（主要开发方向）                              | **已实现**    |
-| `@et4proj/liquid-glass-style-ios26`     | 风格包（token v2）：iOS 26 历史校准基线                                          | **已实现**    |
-| `@et4proj/liquid-glass-web`             | Web 探针 + CSS/SVG 折射后端 + createGlass 运行时 + data-glass 发现               | **M1 已实现** |
-| `@et4proj/liquid-glass-vue` / `-react`  | 框架绑定（指令 / hooks / 组件）                                                  | M2            |
-| `@et4proj/liquid-glass-adapter-vant` 等 | 组件库适配包（映射清单 + 增强件 + CSS 补丁）                                     | M1+           |
-| `@et4proj/unplugin-liquid-glass`        | 构建插件核心（Vite / webpack / Rspack / Rollup）                                 | M1            |
-| `@et4proj/liquid-glass-mp`              | 小程序平台包                                                                     | M3            |
-| `@et4proj/liquid-glass-bridge`          | iOS 26 原生桥接                                                                  | M4            |
-| `@et4proj/liquid-glass-cli`             | `glass init / build / doctor`                                                    | M1+           |
+| 包                                          | 职责                                                                                      | 状态          |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------- |
+| `@et4proj/liquid-glass-core`                | 契约类型 + 配置 + 通道化 token 引擎 + 风格注册表 + resolve（纯逻辑，零风格数据）          | **M0 已实现** |
+| `@et4proj/liquid-glass-style-ios27`         | 风格包（token v2）：iOS 27 校准数据（主要开发方向）                                       | **已实现**    |
+| `@et4proj/liquid-glass-style-ios26`         | 风格包（token v2）：iOS 26 历史校准基线                                                   | **已实现**    |
+| `@et4proj/liquid-glass-web`                 | Web 探针 + CSS/SVG 折射后端 + createGlass 运行时 + data-glass/选择器双发现                | **M1 已实现** |
+| `@et4proj/liquid-glass-react`               | React 绑定层（GlassProvider / useGlassSurface / GlassSurface）                            | **已实现**    |
+| `@et4proj/liquid-glass-vue`                 | Vue 绑定层（liquidGlassVue 插件 / v-glass 指令 / useGlass / GlassSurface）                | **已实现**    |
+| `@et4proj/liquid-glass-adapter`             | adapter 内核（GlassAdapterManifest 契约 + applyAdapter：别名注入 + patches + 选择器发现） | **已实现**    |
+| `@et4proj/liquid-glass-adapter-antd-mobile` | antd-mobile v5 适配数据包（surfaces + tokenMap 别名 + patches，纯 JSON-safe）             | **已实现**    |
+| `@et4proj/liquid-glass-adapter-vant`        | Vant 4 适配数据包（tokenMap 映射全局 fallback 层，纯 JSON-safe）                          | **已实现**    |
+| `@et4proj/liquid-glass-adapter-nutui` 等    | 其余组件库适配包（NutUI React / TDesign Mobile React）                                    | P3            |
+| `@et4proj/unplugin-liquid-glass`            | 构建插件核心（Vite / webpack / Rspack / Rollup）                                          | M1            |
+| `@et4proj/liquid-glass-mp`                  | 小程序平台包                                                                              | M3            |
+| `@et4proj/liquid-glass-bridge`              | iOS 26 原生桥接                                                                           | M4            |
+| `@et4proj/liquid-glass-cli`                 | `glass init / build / doctor`                                                             | M1+           |
 
 完整目录见 [AGENTS.md](AGENTS.md) 仓库地图。
 
@@ -101,10 +106,14 @@ const plan = resolve({
 pnpm install
 pnpm build        # 全包构建
 pnpm test         # 单元测试
+pnpm e2e          # E2E（build + Playwright：发布链路 + 真实浏览器降级验证）
 pnpm typecheck    # 类型检查
 
-# playground 调试台（可视化查看 token 渲染与 resolve 决策）
-pnpm --filter @et4proj/liquid-glass-playground dev   # http://localhost:5173
+# playground 演示目录（MF host 导航 + 各调试区独立包）
+pnpm playground           # 目录壳 MF host，http://localhost:5173
+pnpm playground:workbench   # core/web 工作台（MF remote，localhost:5175）
+pnpm playground:antd-mobile   # antd-mobile 演示（MF remote，localhost:5174）
+pnpm playground:all       # 并行启动全部演示包（新 demo 自动包含）
 ```
 
 要求：Node ≥ 20，pnpm ≥ 9。

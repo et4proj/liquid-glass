@@ -28,6 +28,11 @@ commit-msg:
     commitlint:
       run: pnpm exec commitlint --edit {1}
 pre-push:
+  # piped 串行：两个 turbo 进程并发跑会竞争写 .turbo 缓存；串行输出也更清晰
+  piped: true
   commands:
     typecheck:
       run: pnpm typecheck
+    test:
+      # 单测全量（turbo 缓存命中秒过，仅改动包真跑）——推上去 = 测试过
+      run: pnpm test

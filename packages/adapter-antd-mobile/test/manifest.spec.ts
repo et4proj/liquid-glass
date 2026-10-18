@@ -29,4 +29,32 @@ describe("antdMobileAdapter manifest", () => {
       expect(p.css).toMatch(/:where\(/);
     }
   });
+
+  it("tokenMap：库变量名 --adm-* 前缀、别名指向合法 --glass-* 变量（不瞎编）", () => {
+    const tokenMap = antdMobileAdapter.tokenMap ?? {};
+    expect(Object.keys(tokenMap).length).toBeGreaterThan(0);
+    // --glass-* 白名单与 web css-backend 的变量投影一致（css-backend.ts buildCssVars）
+    const glassVars = [
+      "--glass-blur",
+      "--glass-saturation",
+      "--glass-tint",
+      "--glass-border",
+      "--glass-highlight",
+      "--glass-shadow",
+      "--glass-refraction",
+      "--glass-radius",
+    ];
+    for (const [libVar, glassVar] of Object.entries(tokenMap)) {
+      expect(libVar).toMatch(/^--adm-[a-z0-9-]+$/);
+      expect(glassVars).toContain(glassVar);
+    }
+  });
+
+  it("tokenMap 别名渲染产物挂在 :where(.lg-surface) 作用域（继承不断链）", async () => {
+    const { renderTokenMapCss } = await import("@et4proj/liquid-glass-adapter");
+    const css = renderTokenMapCss(antdMobileAdapter.tokenMap ?? {});
+    expect(css).toContain(":where(.lg-surface)");
+    expect(css).toContain("--adm-color-background: var(--glass-tint)");
+    expect(css).toContain("--adm-color-primary: var(--glass-tint)");
+  });
 });
